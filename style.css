@@ -1,0 +1,597 @@
+/* PALETA DE CORES */
+:root {
+    --cor-fundo: #C9EFFF; /* Céu azul claro */
+    --cor-principal: #FF6B6B; /* Botão chamativo (ex: vermelho/rosa) */
+    --cor-principal-hover: #FF4D4D;
+    --cor-texto: #333;
+    --cor-sucesso: #76FF7A; /* Verde sinal bem brilhante */
+    --cor-perigo: #FF5A5F; /* Vermelho sinal bem brilhante */
+    --cor-atencao: #FFD966;
+    --cor-luz-apagada: #555;
+    --cor-grama: #9DDE8B;
+    --cor-asfalto: #6C757D;
+    --cor-calcada: #CED4DA;
+    --cor-arvore-tronco: #795548;
+    --cor-arvore-copa: #4CAF50;
+    --tempo-travessia: 2s;
+    --tempo-sinal: 1.5s; 
+    --tempo-carro: 4s; 
+}
+
+/* GERAL */
+body {
+    font-family: 'Arial Rounded MT Bold', Arial, sans-serif; 
+    background-image: url(fundo.png);
+    display: grid;
+    place-items: center;
+    min-height: 100vh;
+    color: var(--cor-texto);
+    margin: 0;
+}
+
+/* ============================================= */
+/* ESTILOS DO JOGO (NÍVEL 1)                       */
+/* ============================================= */
+#container-jogo {
+    width: 100%;
+    max-width: 450px;
+    border: 2px solid #ccc;
+    border-radius: 10px;
+    padding: 20px;
+    background-color: #fff;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    text-align: center;
+    margin: 0 auto; /* Centraliza o container do jogo */
+}
+
+/* CENA */
+#cena {
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    border: 2px solid var(--cor-luz-apagada);
+    position: relative;
+    overflow: hidden;
+    margin: 15px auto;
+    background-color: var(--cor-grama); 
+}
+.calcada {
+    position: absolute;
+    width: 100%;
+    height: 25%;
+    background-color: var(--cor-calcada);
+    z-index: 1; 
+}
+#calcada-norte { top: 0; border-bottom: 3px solid #aaa; }
+#calcada-sul { bottom: 0; border-top: 3px solid #aaa; }
+
+#estrada {
+    position: absolute;
+    width: 100%;
+    height: 50%; /* Ocupa o meio */
+    top: 25%;
+    background-color: var(--cor-asfalto);
+    z-index: 2;
+}
+#faixa-pedestre {
+    height: 100%; 
+    width: 30%;
+    position: absolute;
+    top: 0; 
+    left: calc(50% - 15%);
+    background-image: repeating-linear-gradient(
+        90deg, #fff, #fff 15px, transparent 15px, transparent 30px
+    );
+    opacity: 0.8;
+    z-index: 3; /* Abaixo dos carros */
+}
+
+/* SEMÁFORO */
+#semaforo-pedestre {
+    width: 30px;
+    height: 60px;
+    background-color: #333;
+    border-radius: 5px;
+    padding: 5px;
+    position: absolute;
+    right: 20px;
+    top: 27%; 
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    align-items: center;
+    z-index: 10;
+    border: 2px solid #111;
+}
+.luz-pedestre {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background-color: var(--cor-luz-apagada);
+    transition: all 0.3s;
+}
+
+/* ANIMAÇÕES DO SEMÁFORO */
+@keyframes pulse {
+    0% { transform: scale(1); box-shadow: 0 0 10px var(--cor-acesa); }
+    50% { transform: scale(1.1); box-shadow: 0 0 20px var(--cor-acesa); }
+    100% { transform: scale(1); box-shadow: 0 0 10px var(--cor-acesa); }
+}
+.luz-pedestre.vermelha.acesa {
+    background-color: var(--cor-perigo);
+    --cor-acesa: var(--cor-perigo);
+    animation: pulse 0.5s;
+}
+.luz-pedestre.verde.acesa {
+    background-color: var(--cor-sucesso);
+    --cor-acesa: var(--cor-sucesso);
+    animation: pulse 0.5s;
+}
+@keyframes piscar {
+    0%, 100% { 
+        background-color: var(--cor-sucesso);
+        box-shadow: 0 0 10px var(--cor-sucesso);
+    }
+    50% { 
+        background-color: var(--cor-luz-apagada);
+        box-shadow: none;
+    }
+}
+.luz-pedestre.verde.piscando {
+    animation: piscar 0.8s infinite;
+}
+
+/* PERSONAGEM E CARROS */
+#personagem {
+    width: 30px;
+    height: 50px;
+    position: absolute;
+    bottom: 10%; 
+    left: calc(50% - 15px);
+    transition: bottom var(--tempo-travessia) ease-in-out;
+    background-image: url('personagem.png');
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center bottom;
+    z-index: 10;
+    filter: drop-shadow(2px 2px 2px rgba(0,0,0,0.3));
+}
+#personagem.atravessando { bottom: 65%; }
+
+/* Animação de erro */
+#personagem.erro-run-back {
+    animation: runBack 0.8s ease-in-out;
+}
+@keyframes runBack {
+    0% { bottom: 10%; }
+    30% { bottom: 30%; }
+    80% { bottom: 8%; transform: scaleX(-1); }
+    100% { bottom: 10%; transform: scaleX(1); }
+}
+
+.carro {
+    position: absolute;
+    width: 80px;
+    height: 40px;
+    background-image: url('carro.png');
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    z-index: 5; /* Acima da faixa */
+    filter: drop-shadow(2px 2px 2px rgba(0,0,0,0.3));
+    animation: moveCarro var(--tempo-carro) linear;
+    animation-fill-mode: forwards;
+}
+.carro.pista-1 { bottom: 10%; }
+.carro.pista-2 { bottom: 55%; }
+
+@keyframes moveCarro {
+    from { left: -100px; }
+    to { left: 110%; }
+}
+
+/* CENÁRIO */
+.arvore {
+    position: absolute;
+    width: 40px;
+    height: 60px;
+    z-index: 20; 
+}
+.arvore::after {
+    content: '';
+    position: absolute;
+    width: 40px;
+    height: 40px;
+    background-color: var(--cor-arvore-copa);
+    border-radius: 50%;
+    top: 0;
+    left: 0;
+    box-shadow: inset -3px -3px 5px rgba(0,0,0,0.2); 
+}
+.arvore::before {
+    content: '';
+    position: absolute;
+    width: 10px;
+    height: 20px;
+    background-color: var(--cor-arvore-tronco);
+   bottom: 0;
+    left: 15px; 
+}
+
+/* INTERFACE DO JOGO */
+#interface { margin-top: 15px; }
+#mensagem {
+    font-size: 1.2em;
+    font-weight: bold;
+    min-height: 1.5em; 
+}
+#interface button {
+    font-size: 1.2em;
+    padding: 12px 24px;
+    margin: 0 10px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    background-color: var(--cor-principal);
+    color: white;
+    transition: all 0.2s;
+    font-weight: bold;
+    border-bottom: 4px solid #D94848; 
+}
+#interface button:active:not(:disabled) {
+    transform: translateY(2px);
+    border-bottom-width: 2px;
+}
+#interface button:disabled {
+    background-color: #ccc;
+    border-bottom-color: #aaa;
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+/* ============================================= */
+/* ESTILOS DO APP (MENU, TELAS)                    */
+/* ============================================= */
+#app-container {
+    width: 95%;
+    max-width: 600px; 
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+/* Lógica de esconder/mostrar telas */
+.game-screen { display: none; width: 100%; }
+.game-screen.active-screen { display: block; }
+
+/* Estilos do Menu Principal */
+#menu-principal h1 {
+    color: var(--cor-principal);
+    text-align: center;
+    border-bottom: 2px solid var(--cor-fundo);
+    padding-bottom: 10px;
+}
+#menu-principal p {
+    text-align: center;
+    font-size: 1.1em;
+    margin: 20px 0;
+}
+.menu-botoes {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-top: 20px;
+}
+.menu-btn {
+    font-size: 1.2em;
+    padding: 20px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    background-color: var(--cor-principal);
+    color: white;
+    transition: all 0.2s;
+    font-weight: bold;
+    border-bottom: 4px solid #D94848; 
+    text-align: left;
+}
+.menu-btn:hover:not(:disabled) { background-color: var(--cor-principal-hover); }
+.menu-btn:disabled {
+    background-color: #ccc;
+    border-bottom-color: #aaa;
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+.menu-btn:active:not(:disabled) {
+    transform: translateY(2px);
+    border-bottom-width: 2px;
+}
+
+/* Botão de Voltar */
+.btn-voltar {
+    font-size: 1em;
+    padding: 8px 12px;
+    margin-bottom: 15px;
+    background-color: #f0f0f0;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    cursor: pointer;
+    color: #333;
+    font-weight: bold;
+}
+.btn-voltar:hover { background-color: #e0e0e0; }
+
+/* ============================================= */
+/* ESTILOS DE DIFICULDADE E PONTUAÇÃO       */
+/* ============================================= */
+.score-display {
+    text-align: right;
+    font-size: 1.5em;
+    font-weight: bold;
+    color: var(--cor-principal);
+    margin: -10px 10px 10px 0;
+}
+.score-display span {
+    color: #333;
+    background-color: #f0f0f0;
+    padding: 5px 10px;
+    border-radius: 5px;
+    border: 2px solid #ccc;
+    min-width: 40px;
+    display: inline-block;
+    text-align: center;
+}
+
+.menu-level-group {
+    background-color: #f9f9f9;
+    border: 1px solid #eee;
+    border-radius: 8px;
+    padding: 10px 15px;
+    margin-bottom: 20px;
+}
+.menu-level-group h3 { margin: 5px 0 10px 0; color: #333; }
+.difficulty-buttons {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 10px;
+}
+
+/* --- INÍCIO DA REGRA ADICIONADA --- */
+.difficulty-buttons .menu-btn:not(.difficulty) {
+    grid-column: 1 / -1; /* Faz o botão ocupar o espaço das 3 colunas */
+    text-align: center;  /* Centraliza o texto do botão 'Iniciar' */
+}
+/* --- FIM DA REGRA ADICIONADA --- */
+
+.menu-btn.difficulty {
+    font-size: 1em;
+    padding: 15px 10px;
+    text-align: center;
+}
+.menu-btn[data-difficulty="facil"] {
+    background-color: var(--cor-sucesso);
+    border-bottom-color: #4cae4f;
+}
+.menu-btn[data-difficulty="medio"] {
+    background-color: var(--cor-atencao);
+    border-bottom-color: #d1a100;
+    color: #333;
+}
+.menu-btn[data-difficulty="dificil"] {
+    background-color: var(--cor-perigo);
+    border-bottom-color: #D94848;
+}
+/* ============================================= */
+/* NOVOS ESTILOS DE PLACAR (Acertos/Erros) */
+/* ============================================= */
+.score-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto; 
+    gap: 5px 10px;
+   margin: -10px 10px 10px 0;
+}
+
+
+/* Placares Secundários (Acertos/Erros) */
+.score-display.hits,
+.score-display.misses {
+    font-size: 1em;
+    font-weight: bold;
+    color: #555;
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 5px;
+    text-align: center;
+}
+.score-display.hits span {
+    color: var(--cor-sucesso);
+}
+.score-display.misses span {
+    color: var(--cor-perigo);
+}
+/* ========================
+   REGRAS JOGO DAS EMOÇÕES
+   (Adicionar ao final do style.css)
+   ======================== */
+
+/* Container principal do jogo das emoções */
+#nivel-emocoes #emotion-game-container {
+    background-color: #ffffff;
+    border-radius: 15px;
+    padding: 20px;
+    width: 90%;
+    max-width: 500px;
+    text-align: center;
+    margin: 20px auto; /* Centraliza dentro da section */
+}
+
+#nivel-emocoes h1 {
+    font-size: 1.5em;
+    color: #333;
+}
+
+#nivel-emocoes #face-display {
+    margin: 20px 0;
+    min-height: 300px; 
+}
+
+#nivel-emocoes #emotion-face-image {
+    max-width: 100%;
+    height: 300px;
+    border-radius: 10px;
+    border: 3px solid #ddd;
+    object-fit: cover; 
+}
+
+#nivel-emocoes #emotion-options-container {
+   display: flex;
+    flex-direction: column; 
+    gap: 10px;
+}
+
+#nivel-emocoes .option-btn {
+    font-size: 1.2em;
+    padding: 15px;
+    border: none;
+    border-radius: 10px;
+    background-color: #4a90e2;
+    color: white;
+   cursor: pointer;
+    transition: background-color 0.2s, transform 0.2s;
+}
+
+#nivel-emocoes .option-btn:hover {
+    background-color: #357abd;
+    transform: scale(1.02);
+}
+
+/* Classes de feedback */
+#nivel-emocoes #emotion-feedback-text {
+    margin-top: 15px;
+    font-size: 1.1em;
+    font-weight: bold;
+    min-height: 1.2em;
+}
+
+#nivel-emocoes .correct {
+    color: #28a745; /* Verde */
+}
+
+#nivel-emocoes .wrong {
+    color: #dc3545; /* Vermelho */
+}
+/* ============================
+   REGRAS AVENTURA DOS SENTIDOS
+   (Adicionar ao final do style.css)
+   ============================ */
+
+#nivel-sentidos #sensory-game-container {
+    background-color: #fff;
+    border-radius: 15px;
+    padding: 20px;
+    width: 90%;
+    max-width: 600px; /* Um pouco mais largo para as formas */
+    text-align: center;
+    margin: 20px auto;
+}
+
+#nivel-sentidos h1 {
+    font-size: 1.5em;
+    color: #333;
+}
+
+#nivel-sentidos p {
+ font-size: 1.1em;
+}
+
+/* --- Área de Arrastar (Draggable Shapes) --- */
+
+#nivel-sentidos #draggable-shapes {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    height: 150px;
+    background-color: #f0f0f0;
+    border-radius: 10px;
+    margin-top: 20px;
+    padding: 10px;
+}
+
+#nivel-sentidos .shape {
+    width: 80px;
+    height: 80px;
+    cursor: grab; /* Indica que é arrastável */
+    transition: transform 0.2s, opacity 0.2s;
+}
+
+#nivel-sentidos .shape:hover {
+    transform: scale(1.1);
+}
+
+/* As formas geométricas */
+#nivel-sentidos .circulo {
+    background-color: #e91e63; /* Rosa */
+    border-radius: 50%; /* Faz ser um círculo */
+}
+#nivel-sentidos .quadrado {
+    background-color: #00bcd4; /* Ciano */
+}
+#nivel-sentidos .triangulo {
+    width: 0;
+    height: 0;
+    background-color: transparent;
+    border-left: 45px solid transparent;
+    border-right: 45px solid transparent;
+    border-bottom: 80px solid #ffc107; /* Amarelo */
+}
+
+/* --- Área de Soltar (Target Zone) --- */
+
+#nivel-sentidos #target-zone {
+    height: 150px;
+    border: 3px dashed #4a90e2;
+    border-radius: 10px;
+  display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.3em;
+    font-weight: bold;
+    color: #4a90e2;
+    margin-top: 20px;
+    transition: background-color 0.2s, border-color 0.2s;
+}
+
+/* Feedback visual quando o item está sendo arrastado por CIMA do alvo */
+#nivel-sentidos #target-zone.drag-over {
+    background-color: #e0eafc;
+    border-color: #357abd;
+}
+
+/* Feedback visual quando a forma é solta */
+#nivel-sentidos #target-zone.correct-drop {
+    background-color: #d4edda; /* Verde claro */
+    border-color: #28a745;
+}
+
+#nivel-sentidos #target-zone.wrong-drop {
+    background-color: #f8d7da; /* Vermelho claro */
+    border-color: #dc3545;
+}
+
+
+/* Feedback em texto */
+#nivel-sentidos #sensory-feedback-text {
+    margin-top: 15px;
+    font-size: 1.1em;
+    font-weight: bold;
+    min-height: 1.2em;
+}
+#nivel-sentidos #sensory-feedback-text.correct {
+    color: #28a745;
+}
+#nivel-sentidos #sensory-feedback-text.wrong {
+   color: #dc3545;
+}

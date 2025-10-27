@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jogo do Dia a Dia</title>
+    <link rel="stylesheet" href="style.css">
+
+    <meta name="theme-color" content="#FF6B6B" />
+    <link rel="manifest" href="manifest.json">
+
+</head>
+<body>
+    <div id="app-container">
+
+        <section id="menu-principal" class="game-screen active-screen">
+            <h1>Jogo do Dia a Dia</h1>
+            <p>Escolha uma atividade para praticar:</p>
+            
+            <div class="menu-level-group">
+                <h3>Nível 1: Atravessar a Rua</h3>
+                <div class="difficulty-buttons">
+                    <button class="menu-btn difficulty" data-target="nivel-rua" data-difficulty="facil">Fácil</button>
+                    <button class="menu-btn difficulty" data-target="nivel-rua" data-difficulty="medio">Médio</button>
+                    <button class="menu-btn difficulty" data-target="nivel-rua" data-difficulty="dificil">Difícil</button>
+                </div>
+            </div>
+
+            <div class="menu-level-group">
+                <h3>Nível 2: Jogo das Emoções</h3>
+                <div class="difficulty-buttons">
+                    <button class="menu-btn" data-target="nivel-emocoes">Iniciar</button>
+                </div>
+            </div>
+            <div class="menu-level-group">
+                <h3>Nível 3: Aventura dos Sentidos</h3>
+                <div class="difficulty-buttons">
+                    <button class="menu-btn" data-target="nivel-sentidos">Iniciar</button>
+                </div>
+            </div>
+            
+        </section>
+
+        <section id="nivel-rua" class="game-screen">
+            <button class="btn-voltar" data-target="menu-principal"> &lt; Voltar ao Menu</button>
+            
+            <div class="score-container">
+                <div class="score-display hits">ACERTOS: <span id="hits-count">0</span></div>
+                <div class="score-display misses">ERROS: <span id="misses-count">0</span></div>
+            </div>
+            
+            <main id="container-jogo">
+                <h1>Minijogo: Atravessar a Rua</h1>
+                <div id="cena">
+                    <div class="calcada" id="calcada-norte"></div>
+                    <div class="calcada" id="calcada-sul"></div>
+                    <div id="estrada">
+                        <div id="faixa-pedestre"></div>
+                    </div>
+                    <div id="semaforo-pedestre">
+                        <div class="luz-pedestre vermelha"></div>
+                        <div class="luz-pedestre verde"></div>
+                    </div>
+                    <div id="personagem"></div>
+                    <div class="arvore" style="top: 10%; left: 15%;"></div>
+                    <div class="arvore" style="bottom: 8%; left: 75%;"></div>
+                </div>
+                <div id="interface">
+                    <p id="mensagem">O que você deve fazer?</p>
+                    <div id="botoes-acao">
+                        <button data-action="atravessar">ATRAVESSAR</button>
+                    </div>
+                </div>
+            </main>
+        </section>
+
+        <section id="nivel-emocoes" class="game-screen">
+            <button class="btn-voltar" data-target="menu-principal"> &lt; Voltar ao Menu</button>
+
+            <div id="emotion-game-container">
+                <h1>O que esta pessoa está sentindo?</h1>
+        
+                <div id="face-display">
+                    <img id="emotion-face-image" src="" alt="Expressão facial">
+                </div>
+
+                <div id="emotion-options-container">
+                    <button class="option-btn" data-emotion="Alegria">Alegria</button>
+                    <button class="option-btn" data-emotion="Tristeza">Tristeza</button>
+                    <button class="option-btn" data-emotion="Raiva">Raiva</button>
+                </div>
+        
+                <div id="emotion-feedback-text"></div>
+            </div>
+        </section>
+
+        <section id="nivel-sentidos" class="game-screen">
+            <button class="btn-voltar" data-target="menu-principal"> &lt; Voltar ao Menu</button>
+    
+            <div id="sensory-game-container">
+                <h1 id="sensory-title">Fase 1: Encontre o Círculo</h1>
+                <p id="sensory-instruction">Arraste a forma correta para a caixa.</p>
+    
+                <div id="draggable-shapes">
+                    <div id="shape-circulo" class="shape circulo" draggable="true" data-shape="circulo"></div>
+                    <div id="shape-quadrado" class="shape quadrado" draggable="true" data-shape="quadrado"></div>
+                    <div id="shape-triangulo" class="shape triangulo" draggable="true" data-shape="triangulo"></div>
+                </div>
+    
+                <div id="target-zone" data-target-shape="circulo">
+                    Solte o CÍRCULO aqui
+                </div>
+    
+                <div id="sensory-feedback-text"></div>
+            </div>
+        </section>
+
+    </div> 
+    
+    <script src="jogo-rua.js"></script>
+    <script src="jogo-emocoes.js"></script>
+    <script src="jogo-sentidos.js"></script> 
+    <script src="script.js"></script>
