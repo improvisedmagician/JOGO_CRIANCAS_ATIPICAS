@@ -595,3 +595,89 @@ body {
 #nivel-sentidos #sensory-feedback-text.wrong {
    color: #dc3545;
 }
+/* ========================
+   ESTILOS JOGO DAS EMOÇÕES (NOVOS)
+   ======================== */
+
+#emotion-timer {
+    width: 100%;
+    height: 10px;
+    background-color: #e0e0e0;
+    border-radius: 5px;
+    overflow: hidden;
+    margin: 10px 0;
+    /* Escondido por padrão, visível apenas nos níveis Médio/Difícil */
+    display: none; 
+}
+
+#emotion-timer-bar {
+    height: 100%;
+    width: 100%;
+    background-color: var(--cor-principal);
+    border-radius: 5px;
+    /* A animação será controlada por JS */
+    transform: translateX(-100%);
+    transition: transform 0.1s linear; 
+}
+
+/* Animação da barra de tempo */
+#emotion-timer-bar.animating {
+    transform: translateX(0%);
+    transition: transform linear;
+}
+
+
+/* ============================
+   ESTILOS AVENTURA DOS SENTIDOS (NOVOS)
+   ============================ */
+
+/* Mais espaço para as formas extras */
+#nivel-sentidos #draggable-shapes {
+    flex-wrap: wrap; /* Permite que as formas quebrem a linha */
+    height: auto;
+    min-height: 150px;
+}
+
+/* Esconder formas por padrão (JS vai mostrar) */
+#nivel-sentidos .shape {
+    display: none;
+    margin: 5px; /* Espaçamento para o wrap */
+}
+
+/* Estilo da Estrela */
+#nivel-sentidos .estrela {
+    width: 80px;
+    height: 80px;
+    background-color: #FFEB3B; /* Amarelo */
+    clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+}
+
+/* Estilo do Pentágono */
+#nivel-sentidos .pentagono {
+    width: 80px;
+    height: 80px;
+    background-color: #9C27B0; /* Roxo */
+    clip-path: polygon(50% 0%, 100% 38%, 82% 100%, 18% 100%, 0% 38%);
+}
+/* ========================
+   ESTILOS JOGO DAS EMOÇÕES (ATUALIZAÇÃO DE DIFICULDADE)
+   ======================== */
+
+#nivel-emocoes #emotion-options-container {
+    /* Remove o layout de coluna única */
+    /* flex-direction: column; */ 
+    
+    /* Adiciona um layout de grid com 2 colunas */
+   display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+#nivel-emocoes .option-btn {
+    /* Remove o scaling para evitar problemas de layout no grid */
+    /* transform: scale(1.02); */
+}
+
+#nivel-emocoes .option-btn:hover {
+    background-color: #357abd;
+}

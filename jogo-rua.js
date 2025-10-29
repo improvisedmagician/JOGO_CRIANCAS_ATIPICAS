@@ -1,12 +1,13 @@
 /**
  * ARQUIVO: jogo-rua.js
  *
- * MUDANÇAS IMPLEMENTADAS:
- * 1. (BUG FIX) Construtor agora busca elementos de pontuação (hits/misses)
- *    pelo ID no 'document' (nível global) e elementos do jogo (botão, luzes)
- *    dentro do 'containerElement' (nível local).
- * 2. (BUG FIX) Corrigido 'clearInterval' para 'clearTimeout' em 'iniciarTrafego',
- *    o que impediria os carros de pararem corretamente.
+* MUDANÇAS IMPLEMENTADAS:
+ * 1. (REQUISIÇÃO DO USUÁRIO) Atualizado `difficultySettings` com os novos tempos
+ *    extremamente rápidos para o ciclo do semáforo.
+ * 2. (REQUISIÇÃO DO USUÁRIO) Adicionada a propriedade `tempoCarro` às 
+ *    dificuldades para que os carros fiquem mais rápidos.
+ * 3. (FEATURE) A função `iniciar()` agora atualiza dinamicamente a 
+ *    variável CSS `--tempo-carro` para refletir a dificuldade.
  */
 
 class MinigogoAtravessarRua {
@@ -35,31 +36,38 @@ class MinigogoAtravessarRua {
         this.carTimer = null;
         this.semaforoTimer = null;
 
-        // Definições de Dificuldade
+        // --- INÍCIO DA MODIFICAÇÃO (Tempos de Semáforo + Velocidade do Carro) ---
         this.difficultySettings = {
             facil: {
-                tempoVermelhoFixo: 7000, tempoTransicaoVerde: 2000,
-                tempoVerdeFixo: 5000, tempoVerdePiscando: 3000,
-                
+                tempoVermelhoFixo: 7000, 
+                tempoTransicaoVerde:2000,
+                tempoVerdeFixo: 6000, 
+                tempoVerdePiscando: 2000,
+                tempoCarro: '3s' // Velocidade do carro (Fácil)
             },
             medio: {
-                tempoVermelhoFixo: 5000, tempoTransicaoVerde: 1500,
-                tempoVerdeFixo: 3500, tempoVerdePiscando: 2000,
-                
+                tempoVermelhoFixo: 6000, 
+                tempoTransicaoVerde: 1500,
+                tempoVerdeFixo: 4000, 
+                tempoVerdePiscando: 1500,
+                tempoCarro: '2s' // Velocidade do carro (Médio)
             },
             dificil: {
-                tempoVermelhoFixo: 3000, tempoTransicaoVerde: 1000,
-                tempoVerdeFixo: 2000, tempoVerdePiscando: 1000,
-                
+                tempoVermelhoFixo: 3000, 
+                tempoTransicaoVerde: 1000,
+                tempoVerdeFixo: 1000, 
+                tempoVerdePiscando: 500,
+                tempoCarro: '1s' // Velocidade do carro (Difícil)
             }
         };
+        // --- FIM DA MODIFICAÇÃO ---
+        
         this.currentSettings = this.difficultySettings.facil; 
 
         this.vincularEventos();
     }
 
     vincularEventos() {
-        // Se o botão foi encontrado, adiciona o evento
         if (this.btnAtravessar) {
             this.btnAtravessar.addEventListener('click', this.handleAtravessar.bind(this));
         } else {
@@ -69,20 +77,22 @@ class MinigogoAtravessarRua {
 
     iniciar(difficulty) {
         this.currentSettings = this.difficultySettings[difficulty] || this.difficultySettings.facil;
+        
+        // --- INÍCIO DA MODIFICAÇÃO (Define a velocidade do carro) ---
+        // Atualiza a variável CSS global com base na dificuldade
+        document.documentElement.style.setProperty('--tempo-carro', this.currentSettings.tempoCarro);
+        // --- FIM DA MODIFICAÇÃO ---
+        
         this.jogoAtivo = true;
         
-        // Reseta todos os placares
-         
         this.hits = 0;
         this.misses = 0;
-        this.updateCountersDisplay(); // Atualiza todos (acertos, erros, pontos)
+        this.updateCountersDisplay(); 
         
-        // Garante que o personagem está no estado limpo
         if (this.personagem) {
             this.personagem.classList.remove('atravessando', 'erro-run-back');
         }
         
-        // Botão sempre ativo
         this.controlarBotoes(true);
         
         this.iniciarCicloSemaforo('pedestreVermelho');
@@ -92,7 +102,6 @@ class MinigogoAtravessarRua {
         clearTimeout(this.semaforoTimer);
         this.pararTrafego();
         this.jogoAtivo = false;
-    // Garante que o botão seja desabilitado ao sair
         this.controlarBotoes(false); 
     }
 
@@ -107,7 +116,7 @@ class MinigogoAtravessarRua {
                 this.definirSemaforoVisual('vermelho');
                 this.iniciarTrafego(); 
                 this.atualizarMensagem("SINAL VERMELHO! Não atravesse!");
-                this.controlarBotoes(true); // Garante que está ativo
+                this.controlarBotoes(true); 
                 
                 proximoEstado = 'transicaoParaVerde';
                 tempoEspera = settings.tempoVermelhoFixo;
@@ -152,7 +161,6 @@ class MinigogoAtravessarRua {
     }
 
     handleAtravessar() {
-        // Trava o jogo para não receber cliques duplos durante a animação
         if (!this.jogoAtivo) return;
 
         if (this.estadoPedestre === 'verdeFixo' || this.estadoPedestre === 'verdePiscando') {
@@ -177,16 +185,15 @@ class MinigogoAtravessarRua {
         }
         else if (estadoVisual === 'verdePiscando') {
             this.luzPedestreVermelha.classList.remove('acesa');
-        this.luzPedestreVerde.classList.add('acesa');
+            this.luzPedestreVerde.classList.add('acesa');
             this.luzPedestreVerde.classList.add('piscando');
         }
     }
 
     atravessarComSeguranca() {
-        this.jogoAtivo = false; // Trava o jogo durante a animação
+        this.jogoAtivo = false; 
         this.atualizarMensagem("Muito bem! Atravessando em segurança!");
         
-        // Contadores
         this.hits++;
         this.updateCountersDisplay();
         
@@ -198,25 +205,24 @@ class MinigogoAtravessarRua {
         const tempoTravessia = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--tempo-travessia')) * 1000;
         setTimeout(() => {
             this.personagem.classList.remove('atravessando');
-            this.jogoAtivo = true; // Libera o jogo
+            this.jogoAtivo = true; 
             this.iniciarCicloSemaforo('pedestreVermelho'); 
         }, tempoTravessia + 1000); 
     }
 
     tentativaIncorreta() {
-        this.jogoAtivo = false; // Trava o jogo durante a animação
+        this.jogoAtivo = false; 
         this.atualizarMensagem("PERIGO! QUASE!");
 
-        // Contadores
         this.misses++;
         this.updateCountersDisplay();
 
         this.personagem.classList.remove('atravessando');
-     this.personagem.classList.add('erro-run-back');
+        this.personagem.classList.add('erro-run-back');
         
         setTimeout(() => {
             this.personagem.classList.remove('erro-run-back');
-            this.jogoAtivo = true; // Libera o jogo
+            this.jogoAtivo = true; 
             
             if (this.estadoPedestre === 'vermelho') {
                 this.atualizarMensagem("SINAL VERMELHO! Não atravesse!");
@@ -224,9 +230,8 @@ class MinigogoAtravessarRua {
         }, 800); 
     }
 
-    // Função única para atualizar todos os placares
     updateCountersDisplay() {
-        if (this.hitElement) {
+    if (this.hitElement) {
             this.hitElement.textContent = this.hits;
         }
         if (this.missElement) {
@@ -234,18 +239,13 @@ class MinigogoAtravessarRua {
         }
     }
 
-    // ... (Funções de Tráfego e Utilitárias) ...
-
     iniciarTrafego() {
-        // --- CORREÇÃO DE BUG (clearInterval -> clearTimeout) ---
         if (this.carTimer) clearTimeout(this.carTimer);
-        // --- FIM DA CORREÇÃO ---
-
-        if (!this.estrada) return; // Checagem de segurança
+        if (!this.estrada) return; 
         
         const criarCarro = () => {
             const carro = document.createElement('div');
-       carro.classList.add('carro');
+            carro.classList.add('carro');
             const pista = Math.random() > 0.5 ? 'pista-1' : 'pista-2';
             carro.classList.add(pista);
             this.estrada.appendChild(carro);
@@ -254,12 +254,12 @@ class MinigogoAtravessarRua {
             this.carTimer = setTimeout(criarCarro, proximoTempo);
         };
         criarCarro();
-    }
+   }
 
     pararTrafego() {
         if (this.carTimer) {
             clearTimeout(this.carTimer);
-            this.carTimer = null;
+           this.carTimer = null;
         }
     }
 
