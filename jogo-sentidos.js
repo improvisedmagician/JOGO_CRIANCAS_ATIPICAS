@@ -1,9 +1,8 @@
 // jogo-sentidos.js
-// VERSÃO 6 (Dificuldade com Distratores)
+// VERSÃO 8 (Correção definitiva para "desaparecimento" no mobile usando 'visibility')
 
 // --- 1. Referências da UI ---
 const targetZone = document.getElementById("target-zone");
-// Pega TODAS as formas, incluindo as novas
 const draggableShapes = document.querySelectorAll("#draggable-shapes .shape"); 
 const feedbackText = document.getElementById("sensory-feedback-text");
 const titleText = document.getElementById("sensory-title");
@@ -33,7 +32,7 @@ const sensoryLevels = [
 
 // --- 3. Variáveis de Estado ---
 let currentSensoryLevelIndex = 0;
-let currentSensoryDifficulty = 'facil'; // 'facil', 'medio', 'dificil'
+let currentSensoryDifficulty = 'facil';
 let draggedShape = null; 
 let isDragging = false; 
 
@@ -41,7 +40,7 @@ let isDragging = false;
 
 function startSensoryGame(difficulty = 'facil') {
     console.log("Iniciando Aventura dos Sentidos (Dificuldade: " + difficulty + ")");
-    currentSensoryDifficulty = difficulty; // Armazena a dificuldade
+    currentSensoryDifficulty = difficulty;
     currentSensoryLevelIndex = 0;
     loadSensoryLevel(currentSensoryLevelIndex);
 }
@@ -51,14 +50,13 @@ function stopSensoryGame() {
     if (draggedShape) {
         draggedShape.style.opacity = "1";
         draggedShape.style.transform = "translate(0, 0)";
+        draggedShape.style.visibility = 'visible'; // Garante que está visível
     }
     draggedShape = null;
     isDragging = false;
 }
 
-// --- 5. Função de Carregar Nível (MODIFICADA) ---
-// Agora controla a visibilidade das formas
-
+// --- 5. Função de Carregar Nível ---
 function loadSensoryLevel(index) {
     const level = sensoryLevels[index];
     
@@ -70,35 +68,28 @@ function loadSensoryLevel(index) {
     targetZone.textContent = level.targetText;
     targetZone.className = "";
 
-    // --- LÓGICA DE DIFICULDADE (Mostrar/Esconder Formas) ---
     draggableShapes.forEach(shape => {
         const shapeType = shape.dataset.shape;
         let showShape = false;
 
-        // 1. Os alvos (Círculo, Quadrado, Triângulo) sempre aparecem
         if (shapeType === 'circulo' || shapeType === 'quadrado' || shapeType === 'triangulo') {
             showShape = true;
         }
-
-        // 2. Mostrar distratores com base na dificuldade
-        // (Médio = 1 distrator)
         if (currentSensoryDifficulty === 'medio' && shapeType === 'estrela') {
             showShape = true;
         }
-        // (Difícil = 2 distratores)
         if (currentSensoryDifficulty === 'dificil' && (shapeType === 'estrela' || shapeType === 'pentagono')) {
             showShape = true;
         }
         
-        // Aplica a visibilidade e reseta a posição
         shape.style.display = showShape ? "block" : "none";
         shape.style.opacity = "1";
-        shape.style.transform = "translate(0, 0)"; 
+        shape.style.transform = "translate(0, 0)";
+        shape.style.visibility = 'visible'; // Garante que está visível
     });
 }
 
-// --- 6. Lógica de Drag and Drop (Inalterada) ---
-// (Listeners são adicionados UMA VEZ no final do arquivo)
+// --- 6. Lógica de Drag and Drop (Mouse - Inalterada) ---
 
 function handleDragStart(e) {
     draggedShape = this; 
@@ -131,7 +122,7 @@ function handleDrop(e) {
     checkDropLogic(draggedShape);
 }
 
-// --- Eventos de Toque (Inalterados) ---
+// --- 7. Lógica de Drag and Drop (Touch - CORRIGIDA) ---
 let initialX = 0, initialY = 0, offsetX = 0, offsetY = 0;
 
 function handleTouchStart(e) {
@@ -155,9 +146,12 @@ function handleTouchMove(e) {
     offsetY = currentY;
     draggedShape.style.transform = `translate(${currentX}px, ${currentY}px)`;
     
-    draggedShape.style.display = 'none';
+    // --- INÍCIO DA CORREÇÃO (VISIBILITY) ---
+    // Usa 'visibility' em vez de 'display' para evitar bugs de layout/desaparecimento
+    draggedShape.style.visibility = 'hidden';
     let elementOver = document.elementFromPoint(touch.clientX, touch.clientY);
-    draggedShape.style.display = '';
+    draggedShape.style.visibility = 'visible';
+    // --- FIM DA CORREÇÃO ---
     
     if (elementOver && elementOver.closest('#target-zone')) {
         targetZone.classList.add("drag-over");
@@ -169,9 +163,12 @@ function handleTouchMove(e) {
 function handleTouchEnd(e) {
     if (!isDragging || !draggedShape) return;
     let touch = e.changedTouches[0];
-    draggedShape.style.display = 'none';
+    
+    // --- INÍCIO DA CORREÇÃO (VISIBILITY) ---
+    draggedShape.style.visibility = 'hidden';
     let elementOver = document.elementFromPoint(touch.clientX, touch.clientY);
-    draggedShape.style.display = '';
+    draggedShape.style.visibility = 'visible';
+    // --- FIM DA CORREÇÃO ---
     
     const currentDraggedShape = draggedShape;
     isDragging = false;
@@ -188,7 +185,7 @@ function handleTouchEnd(e) {
     }
 }
 
-// --- 7. Lógica de Verificação (Inalterada) ---
+// --- 8. Lógica de Verificação (Inalterada) ---
 
 function checkDropLogic(shapeElement) {
     if (!shapeElement) return;
@@ -208,7 +205,7 @@ function handleCorrectDrop(shapeElement) {
     feedbackText.textContent = "Parabéns, você achou o " + targetZone.dataset.targetShape + "!";
     feedbackText.className = "correct";
     
-    // Esconde a forma (mas não a remove, só esconde)
+    // Esconde a forma
     shapeElement.style.display = "none";
 
     setTimeout(() => {
@@ -220,7 +217,7 @@ function handleCorrectDrop(shapeElement) {
             instructionText.textContent = "Você completou todas as fases!";
             feedbackText.textContent = "Você é ótimo com as formas!";
             feedbackText.className = "correct";
-            targetZone.textContent = "VITÓRIA!";
+       targetZone.textContent = "VITÓRIA!";
         }
     }, 2000); 
 }
@@ -242,26 +239,20 @@ function handleWrongDrop(shapeElement) {
 }
 
 
-// --- 8. Inicialização ÚNICA dos Listeners ---
-// (Isso previne múltiplos listeners)
+// --- 9. Inicialização ÚNICA dos Listeners ---
 function addDragDropListeners() {
     draggableShapes.forEach(shape => {
-        // --- Eventos de MOUSE ---
         shape.addEventListener("dragstart", handleDragStart);
         shape.addEventListener("dragend", handleDragEnd);
-        // --- Eventos de TOQUE ---
         shape.addEventListener("touchstart", handleTouchStart, { passive: false });
     });
 
-    // --- Eventos da Zona Alvo (MOUSE) ---
     targetZone.addEventListener("dragover", handleDragOver);
     targetZone.addEventListener("dragleave", handleDragLeave);
     targetZone.addEventListener("drop", handleDrop);
 
-    // --- Eventos Globais (TOQUE) ---
-    document.addEventListener("touchmove", handleTouchMove, { passive: false });
+   document.addEventListener("touchmove", handleTouchMove, { passive: false });
     document.addEventListener("touchend", handleTouchEnd, { passive: false });
 }
 
-// Roda UMA VEZ quando o script carrega
 addDragDropListeners();

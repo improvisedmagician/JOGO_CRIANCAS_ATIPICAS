@@ -1,50 +1,48 @@
 // jogo-emocoes.js
-// VERSÃO 3 (Dificuldade por Número de Opções)
+// VERSÃO 6 (Mensagem de Parabéns customizada)
 
 // --- 1. Banco de Imagens e Nomes ---
-// (VOCÊ PRECISA ADICIONAR AS IMAGENS PARA OS NOVOS)
 const emotionQuestions = [
     { imagePath: "images/rosto_alegre.png", correctEmotion: "Alegria" },
     { imagePath: "images/rosto_triste.png", correctEmotion: "Tristeza" },
     { imagePath: "images/rosto_raiva.png", correctEmotion: "Raiva" },
-    { imagePath: "images/rosto_surpresa.png", correctEmotion: "Surpresa" },
     { imagePath: "images/rosto_medo.png", correctEmotion: "Medo" },
     { imagePath: "images/rosto_nojinho.png", correctEmotion: "Nojinho" },
     { imagePath: "images/rosto_tedio.png", correctEmotion: "Tédio" },
-    { imagePath: "images/rosto_ansiedade.png", correctEmotion: "Aniedade" }
+    { imagePath: "images/rosto_vergonha.png", correctEmotion: "Vergonha" },
+    { imagePath: "images/rosto_ansiedade.png", correctEmotion: "Ansiedade" }
 ];
 
-// Nomes de todas as emoções para usar como "distratores"
+// Nomes de todas as emoções
 const allEmotionNames = [
-  "Alegria", "Tristeza", "Raiva", "Surpresa", 
-  "Medo", "Nojinho", "Tédio", "Ansiedade",
+  "Alegria", "Tristeza", "Raiva", "Medo", 
+  "Nojinho", "Tédio", "Vergonha", "Ansiedade"
 ];
 
 // --- 2. Definição de Dificuldade ---
 const emotionDifficultySettings = {
-    // Nível 1: 4 opções, sem tempo
     facil: { numOptions: 4, timeLimit: 0 },
-    // Nível 2: 6 opções, 5 segundos
     medio: { numOptions: 6, timeLimit: 5000 },
-    // Nível 3: 8 opções, 3 segundos
     dificil: { numOptions: 8, timeLimit: 3000 }
 };
 let currentDifficultySettings = emotionDifficultySettings.facil;
-let emotionTimer = null; // Guarda o ID do setTimeout
+let emotionTimer = null; 
 
 // --- 3. Referências da UI ---
 const emotionFaceImage = document.getElementById("emotion-face-image");
-// Container dos botões (não os botões em si)
 const emotionOptionButtonsContainer = document.getElementById("emotion-options-container");
 const emotionFeedbackText = document.getElementById("emotion-feedback-text");
 const emotionTimerDiv = document.getElementById("emotion-timer");
 const emotionTimerBar = document.getElementById("emotion-timer-bar");
+// (NOVO) Referência ao título H1
+const emotionGameTitle = document.querySelector('#nivel-emocoes h1');
 
 // --- 4. Variáveis de Controle ---
-let shuffledQuestions = []; // Uma cópia das perguntas, embaralhada
+let shuffledQuestions = []; 
 let currentEmotionQuestionIndex = 0;
 let currentEmotionQuestion;
 let emotionGameActive = false; 
+let correctlyGuessedEmotions = new Set(); 
 
 // --- 5. Funções de Timer (Inalteradas) ---
 function resetTimerBar() {
@@ -66,9 +64,6 @@ function startTimerBar(durationMs) {
 
 // --- 6. Funções Principais (Refatoradas) ---
 
-/**
- * Embaralha uma array (algoritmo Fisher-Yates)
- */
 function shuffleArray(array) {
     for (let i = array.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
@@ -76,37 +71,23 @@ function shuffleArray(array) {
     }
 }
 
-/**
- * Gera os botões de opção dinamicamente
- */
 function generateEmotionOptions() {
     const correctEmotion = currentEmotionQuestion.correctEmotion;
     const numOptions = currentDifficultySettings.numOptions;
 
-    // 1. Começa com a resposta correta
     let options = [correctEmotion];
-
-    // 2. Pega todos os outros nomes (distratores)
     let distractors = allEmotionNames.filter(name => name !== correctEmotion);
     shuffleArray(distractors);
 
-    // 3. Adiciona distratores até atingir o numOptions
     while (options.length < numOptions && distractors.length > 0) {
         options.push(distractors.pop());
     }
 
-    // 4. Embaralha as opções finais
     shuffleArray(options);
-
-    // 5. Cria os botões no HTML
     populateButtonContainer(options);
 }
 
-/**
- * Limpa o container e cria os novos botões
- */
 function populateButtonContainer(optionsArray) {
-    // Limpa botões antigos
     emotionOptionButtonsContainer.innerHTML = ''; 
 
     optionsArray.forEach(emotionName => {
@@ -114,10 +95,7 @@ function populateButtonContainer(optionsArray) {
         button.className = 'option-btn';
         button.dataset.emotion = emotionName;
         button.textContent = emotionName;
-        
-        // Adiciona o listener de clique AQUI
         button.addEventListener('click', handleEmotionChoice);
-        
         emotionOptionButtonsContainer.appendChild(button);
     });
 }
@@ -126,23 +104,26 @@ function showEmotionQuestion() {
     clearTimeout(emotionTimer);
     resetTimerBar();
 
-    // Se chegou ao fim do array, embaralha de novo
     if (currentEmotionQuestionIndex >= shuffledQuestions.length) {
         currentEmotionQuestionIndex = 0; 
         shuffleArray(shuffledQuestions);
     }
     
     currentEmotionQuestion = shuffledQuestions[currentEmotionQuestionIndex];
+
+    if (correctlyGuessedEmotions.has(currentEmotionQuestion.correctEmotion)) {
+        console.log("Pulando " + currentEmotionQuestion.correctEmotion + " (já acertou)");
+        currentEmotionQuestionIndex++;
+        showEmotionQuestion(); 
+        return; 
+    }
+
     emotionFaceImage.src = currentEmotionQuestion.imagePath;
     emotionFeedbackText.textContent = "";
     emotionFeedbackText.className = "";
-
-    // Gera os botões (Fácil: 4, Médio: 6, Difícil: 8)
     generateEmotionOptions();
-
     emotionGameActive = true;
 
-    // Inicia o timer da dificuldade
     const timeLimit = currentDifficultySettings.timeLimit;
     if (timeLimit > 0) {
         startTimerBar(timeLimit);
@@ -152,6 +133,10 @@ function showEmotionQuestion() {
      }
 }
 
+/**
+ * (MODIFICADO) Chamada quando a resposta está CORRETA
+</summary>
+ */
 function handleEmotionCorrectAnswer() {
     if (!emotionGameActive) return;
     emotionGameActive = false; 
@@ -161,12 +146,44 @@ function handleEmotionCorrectAnswer() {
     emotionFeedbackText.textContent = "Isso mesmo! É " + currentEmotionQuestion.correctEmotion + "!";
     emotionFeedbackText.classList.add("correct");
 
+    correctlyGuessedEmotions.add(currentEmotionQuestion.correctEmotion);
+    console.log("Acertos: " + correctlyGuessedEmotions.size + "/" + emotionQuestions.length);
+
     setTimeout(() => {
-        currentEmotionQuestionIndex++;
-        showEmotionQuestion(); // Mostra a próxima
+        // --- INÍCIO DA MODIFICAÇÃO (Mensagem de Vitória) ---
+        if (correctlyGuessedEmotions.size === emotionQuestions.length) {
+            // VITÓRIA!
+            
+            // 1. Limpa os elementos do jogo
+            resetTimerBar();
+            clearTimeout(emotionTimer);
+            emotionOptionButtonsContainer.innerHTML = ''; 
+            
+            // 2. Mostra a mensagem de parabéns
+            if (emotionGameTitle) {
+                emotionGameTitle.textContent = "Parabéns!";
+            }
+            
+            // 3. (Opcional) Mostra uma imagem de comemoração
+            //     (Crie um 'images/parabens.png' para isso)
+            emotionFaceImage.src = "images/parabens.png"; 
+      
+            // 4. Define o texto de feedback da vitória
+            emotionFeedbackText.textContent = "Você reconheceu todas as emoções! Muito bem!";
+            emotionFeedbackText.className = "correct";
+
+        } else {
+            // Se não, avança para a próxima
+            currentEmotionQuestionIndex++;
+            showEmotionQuestion(); 
+        }
+        // --- FIM DA MODIFICAÇÃO ---
     }, 1500); 
 }
 
+/**
+ * Chamada quando a resposta está ERRADA
+ */
 function handleEmotionWrongAnswer(feedbackMessage) {
     if (!emotionGameActive) return;
     emotionGameActive = false; 
@@ -178,12 +195,12 @@ function handleEmotionWrongAnswer(feedbackMessage) {
     
     setTimeout(() => {
         currentEmotionQuestionIndex++;
-        showEmotionQuestion(); // Mostra a próxima
-A   }, 1500);
+        showEmotionQuestion(); 
+    }, 1500);
 }
 
 /**
- * Chamada quando um botão de emoção é clicado (Novo)
+ * Chamada quando um botão de emoção é clicado
  */
 function handleEmotionChoice(event) {
     if (!emotionGameActive) return; 
@@ -203,25 +220,33 @@ function handleEmotionChoice(event) {
 function startEmotionGame(difficulty = 'facil') {
     console.log("Iniciando Jogo das Emoções (Dificuldade: " + difficulty + ")");
     
-    currentDifficultySettings = emotionDifficultySettings[difficulty] || emotionDifficultySettings.facil;
+    // (NOVO) Reseta o título ao (re)iniciar
+    if (emotionGameTitle) {
+        emotionGameTitle.textContent = "O que esta pessoa está sentindo?";
+    }
     
-    // Cria uma cópia embaralhada do banco de perguntas
+    currentDifficultySettings = emotionDifficultySettings[difficulty] || emotionDifficultySettings.facil;
+    correctlyGuessedEmotions = new Set();
     shuffledQuestions = [...emotionQuestions];
     shuffleArray(shuffledQuestions);
-    
     currentEmotionQuestionIndex = 0;
     showEmotionQuestion();
 }
 
+/**
+ * (MODIFICADO) Para o Jogo
+ */
 function stopEmotionGame() {
     console.log("Parando Jogo das Emoções...");
     clearTimeout(emotionTimer);
     resetTimerBar();
-    emotionGameActive = false;
+   emotionGameActive = false;
     emotionFaceImage.src = ""; 
     emotionFeedbackText.textContent = "";
-    // Limpa os botões
     emotionOptionButtonsContainer.innerHTML = '';
-}
 
-// (O loop 'emotionOptionButtons.forEach' foi REMOVIDO daqui)
+    // (NOVO) Garante que o título seja resetado ao sair
+    if (emotionGameTitle) {
+        emotionGameTitle.textContent = "O que esta pessoa está sentindo?";
+    }
+}
