@@ -1,7 +1,8 @@
 // jogo-emocoes.js
-// VERSÃO 6 (Mensagem de Parabéns customizada)
+// VERSÃO 8 (Cronômetro numérico + Caminhos Corrigidos para raiz)
 
 // --- 1. Banco de Imagens e Nomes ---
+// (CAMINHOS CORRIGIDOS para funcionar na raiz)
 const emotionQuestions = [
     { imagePath: "images/rosto_alegre.png", correctEmotion: "Alegria" },
     { imagePath: "images/rosto_triste.png", correctEmotion: "Tristeza" },
@@ -13,7 +14,6 @@ const emotionQuestions = [
     { imagePath: "images/rosto_ansiedade.png", correctEmotion: "Ansiedade" }
 ];
 
-// Nomes de todas as emoções
 const allEmotionNames = [
   "Alegria", "Tristeza", "Raiva", "Medo", 
   "Nojinho", "Tédio", "Vergonha", "Ansiedade"
@@ -26,7 +26,8 @@ const emotionDifficultySettings = {
     dificil: { numOptions: 8, timeLimit: 3000 }
 };
 let currentDifficultySettings = emotionDifficultySettings.facil;
-let emotionTimer = null; 
+let emotionTimer = null; // Guarda o setInterval
+let timeLeft = 0; // Guarda os segundos restantes
 
 // --- 3. Referências da UI ---
 const emotionFaceImage = document.getElementById("emotion-face-image");
@@ -34,8 +35,9 @@ const emotionOptionButtonsContainer = document.getElementById("emotion-options-c
 const emotionFeedbackText = document.getElementById("emotion-feedback-text");
 const emotionTimerDiv = document.getElementById("emotion-timer");
 const emotionTimerBar = document.getElementById("emotion-timer-bar");
-// (NOVO) Referência ao título H1
 const emotionGameTitle = document.querySelector('#nivel-emocoes h1');
+// (MELHORIA 2) Referência ao contador numérico
+const emotionCountdownDisplay = document.getElementById("emotion-countdown");
 
 // --- 4. Variáveis de Controle ---
 let shuffledQuestions = []; 
@@ -44,7 +46,7 @@ let currentEmotionQuestion;
 let emotionGameActive = false; 
 let correctlyGuessedEmotions = new Set(); 
 
-// --- 5. Funções de Timer (Inalteradas) ---
+// --- 5. Funções de Timer (Melhoria 2) ---
 function resetTimerBar() {
     emotionTimerBar.classList.remove("animating");
     emotionTimerBar.style.transitionDuration = '0s';
@@ -62,8 +64,18 @@ function startTimerBar(durationMs) {
     emotionTimerBar.classList.add("animating");
 }
 
-// --- 6. Funções Principais (Refatoradas) ---
+// Limpa todos os timers (Interval e Bar)
+function clearAllTimers() {
+    clearInterval(emotionTimer); // Usa clearInterval
+    emotionTimer = null;
+    resetTimerBar();
+    if (emotionCountdownDisplay) {
+        emotionCountdownDisplay.textContent = "";
+    }
+}
 
+
+// --- 6. Funções Principais ---
 function shuffleArray(array) {
     for (let i = array.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
@@ -74,22 +86,18 @@ function shuffleArray(array) {
 function generateEmotionOptions() {
     const correctEmotion = currentEmotionQuestion.correctEmotion;
     const numOptions = currentDifficultySettings.numOptions;
-
     let options = [correctEmotion];
     let distractors = allEmotionNames.filter(name => name !== correctEmotion);
     shuffleArray(distractors);
-
     while (options.length < numOptions && distractors.length > 0) {
         options.push(distractors.pop());
     }
-
     shuffleArray(options);
     populateButtonContainer(options);
 }
 
 function populateButtonContainer(optionsArray) {
     emotionOptionButtonsContainer.innerHTML = ''; 
-
     optionsArray.forEach(emotionName => {
         const button = document.createElement('button');
         button.className = 'option-btn';
@@ -100,9 +108,9 @@ function populateButtonContainer(optionsArray) {
     });
 }
 
+// (MODIFICADO) Lógica do timer reescrita com setInterval
 function showEmotionQuestion() {
-    clearTimeout(emotionTimer);
-    resetTimerBar();
+    clearAllTimers(); // Limpa timers anteriores
 
     if (currentEmotionQuestionIndex >= shuffledQuestions.length) {
         currentEmotionQuestionIndex = 0; 
@@ -124,23 +132,31 @@ function showEmotionQuestion() {
     generateEmotionOptions();
     emotionGameActive = true;
 
+    // --- LÓGICA DO TIMER NUMÉRICO (Melhoria 2) ---
     const timeLimit = currentDifficultySettings.timeLimit;
     if (timeLimit > 0) {
-        startTimerBar(timeLimit);
-        emotionTimer = setTimeout(() => {
-            handleEmotionWrongAnswer("Tempo esgotado!");
-        }, timeLimit);
-     }
+        timeLeft = timeLimit / 1000; // Ex: 5000ms -> 5s
+        emotionCountdownDisplay.textContent = timeLeft;
+        startTimerBar(timeLimit); // Inicia a barra visual
+
+        // Inicia o contador
+        emotionTimer = setInterval(() => {
+            timeLeft--;
+            if (timeLeft <= 0) {
+                emotionCountdownDisplay.textContent = "0";
+                handleEmotionWrongAnswer("Tempo esgotado!");
+            } else {
+                emotionCountdownDisplay.textContent = timeLeft;
+            }
+        }, 1000); // Roda a cada segundo
+
+    }
 }
 
-/**
- * (MODIFICADO) Chamada quando a resposta está CORRETA
-</summary>
- */
 function handleEmotionCorrectAnswer() {
     if (!emotionGameActive) return;
     emotionGameActive = false; 
-    clearTimeout(emotionTimer);
+    clearAllTimers(); // Para o timer
 
     console.log("ACERTOU JOGO EMOÇÕES!");
     emotionFeedbackText.textContent = "Isso mesmo! É " + currentEmotionQuestion.correctEmotion + "!";
@@ -150,44 +166,27 @@ function handleEmotionCorrectAnswer() {
     console.log("Acertos: " + correctlyGuessedEmotions.size + "/" + emotionQuestions.length);
 
     setTimeout(() => {
-        // --- INÍCIO DA MODIFICAÇÃO (Mensagem de Vitória) ---
         if (correctlyGuessedEmotions.size === emotionQuestions.length) {
             // VITÓRIA!
-            
-            // 1. Limpa os elementos do jogo
-            resetTimerBar();
-            clearTimeout(emotionTimer);
             emotionOptionButtonsContainer.innerHTML = ''; 
-            
-            // 2. Mostra a mensagem de parabéns
             if (emotionGameTitle) {
                 emotionGameTitle.textContent = "Parabéns!";
             }
-            
-            // 3. (Opcional) Mostra uma imagem de comemoração
-            //     (Crie um 'images/parabens.png' para isso)
+            // CAMINHO CORRIGIDO
             emotionFaceImage.src = "images/parabens.png"; 
-      
-            // 4. Define o texto de feedback da vitória
             emotionFeedbackText.textContent = "Você reconheceu todas as emoções! Muito bem!";
             emotionFeedbackText.className = "correct";
-
         } else {
-            // Se não, avança para a próxima
             currentEmotionQuestionIndex++;
             showEmotionQuestion(); 
         }
-        // --- FIM DA MODIFICAÇÃO ---
     }, 1500); 
 }
 
-/**
- * Chamada quando a resposta está ERRADA
- */
 function handleEmotionWrongAnswer(feedbackMessage) {
     if (!emotionGameActive) return;
     emotionGameActive = false; 
-    clearTimeout(emotionTimer);
+    clearAllTimers(); // Para o timer
 
     console.log("ERROU JOGO EMOÇÕES. " + feedbackMessage);
     emotionFeedbackText.textContent = feedbackMessage || "Tente de novo...";
@@ -199,12 +198,8 @@ function handleEmotionWrongAnswer(feedbackMessage) {
     }, 1500);
 }
 
-/**
- * Chamada quando um botão de emoção é clicado
- */
 function handleEmotionChoice(event) {
     if (!emotionGameActive) return; 
-
     const chosenEmotion = event.target.dataset.emotion;
     
     if (chosenEmotion === currentEmotionQuestion.correctEmotion) {
@@ -216,11 +211,9 @@ function handleEmotionChoice(event) {
 
 
 // --- 7. Funções de Início/Fim (Chamadas pelo Menu) ---
-
 function startEmotionGame(difficulty = 'facil') {
     console.log("Iniciando Jogo das Emoções (Dificuldade: " + difficulty + ")");
     
-    // (NOVO) Reseta o título ao (re)iniciar
     if (emotionGameTitle) {
         emotionGameTitle.textContent = "O que esta pessoa está sentindo?";
     }
@@ -233,19 +226,13 @@ function startEmotionGame(difficulty = 'facil') {
     showEmotionQuestion();
 }
 
-/**
- * (MODIFICADO) Para o Jogo
- */
 function stopEmotionGame() {
     console.log("Parando Jogo das Emoções...");
-    clearTimeout(emotionTimer);
-    resetTimerBar();
-   emotionGameActive = false;
+    clearAllTimers(); // Limpa tudo
+    emotionGameActive = false;
     emotionFaceImage.src = ""; 
     emotionFeedbackText.textContent = "";
     emotionOptionButtonsContainer.innerHTML = '';
-
-    // (NOVO) Garante que o título seja resetado ao sair
     if (emotionGameTitle) {
         emotionGameTitle.textContent = "O que esta pessoa está sentindo?";
     }

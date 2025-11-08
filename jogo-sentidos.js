@@ -1,48 +1,82 @@
 // jogo-sentidos.js
-// VERSÃO 8 (Correção definitiva para "desaparecimento" no mobile usando 'visibility')
+// VERSÃO 16 (Lógica de Alvo Único + Dificuldade 3/5/7)
 
 // --- 1. Referências da UI ---
-const targetZone = document.getElementById("target-zone");
+const targetZone = document.getElementById("target-zone"); // Alvo Único
 const draggableShapes = document.querySelectorAll("#draggable-shapes .shape"); 
 const feedbackText = document.getElementById("sensory-feedback-text");
 const titleText = document.getElementById("sensory-title");
 const instructionText = document.getElementById("sensory-instruction");
 
-// --- 2. Definição dos Níveis ---
-const sensoryLevels = [
-    {
-        title: "Fase 1: O Círculo",
-        instruction: "Arraste o CÍRCULO para a caixa.",
-        targetShape: "circulo",
-        targetText: "Solte o CÍRCULO aqui"
-    },
-    {
-        title: "Fase 2: O Quadrado",
-        instruction: "Agora, arraste o QUADRADO para a caixa.",
-        targetShape: "quadrado",
-        targetText: "Solte o QUADRADO aqui"
-    },
-    {
-        title: "Fase 3: O Triângulo",
-        instruction: "Por último, arraste o TRIÂNGULO para a caixa.",
-        targetShape: "triangulo",
-        targetText: "Solte o TRIÂNGULO aqui"
-    }
+// --- 2. Definição das Formas (7 no total) ---
+const allShapes = [
+    { shape: "circulo", name: "CÍRCULO" },
+    { shape: "quadrado", name: "QUADRADO" },
+    { shape: "triangulo", name: "TRIÂNGULO" },
+    { shape: "estrela", name: "ESTRELA" },
+    { shape: "pentagono", name: "PENTÁGONO" },
+    { shape: "hexagono", name: "HEXÁGONO" },
+    { shape: "losango", name: "LOSANGO" }
 ];
 
-// --- 3. Variáveis de Estado ---
-let currentSensoryLevelIndex = 0;
-let currentSensoryDifficulty = 'facil';
+// --- 3. Definição de Dificuldade (LÓGICA 3/5/7) ---
+const sensoryDifficultySettings = {
+    // Fácil: 3 formas
+    facil: { targetShapes: ["circulo", "quadrado", "triangulo"] },
+    // Médio: 5 formas
+    medio: { targetShapes: ["circulo", "quadrado", "triangulo", "estrela", "pentagono"] },
+    // Difícil: 7 formas
+    dificil: { targetShapes: ["circulo", "quadrado", "triangulo", "estrela", "pentagono", "hexagono", "losango"] }
+};
+
+// --- 4. Variáveis de Estado ---
+let currentLevelList = []; // Lista de alvos (ex: 3, 5 ou 7 formas)
+let currentVisibleShapes = []; // Formas na tela (igual a currentLevelList, pois não há distratores)
+let currentSensoryLevelIndex = 0; // Qual alvo estamos procurando (0, 1, 2...)
 let draggedShape = null; 
 let isDragging = false; 
 
-// --- 4. Funções de Início e Fim ---
+function shuffleArray(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+    }
+}
+
+// --- 5. Funções de Início e Fim ---
 
 function startSensoryGame(difficulty = 'facil') {
-    console.log("Iniciando Aventura dos Sentidos (Dificuldade: " + difficulty + ")");
-    currentSensoryDifficulty = difficulty;
+    console.log("Iniciando Jogo de Alvo Único (Dificuldade: " + difficulty + ")");
+    
+    // 1. Define as formas-alvo E as formas visíveis para este nível
+    const settings = sensoryDifficultySettings[difficulty];
+    currentVisibleShapes = settings.targetShapes;
+    
+    // 2. A lista de alvos é uma cópia embaralhada das formas visíveis
+    currentLevelList = [...currentVisibleShapes];
+    shuffleArray(currentLevelList);
+    
+    // 3. Reseta o progresso
     currentSensoryLevelIndex = 0;
-    loadSensoryLevel(currentSensoryLevelIndex);
+
+    // 4. Reseta a UI (mostra/esconde formas)
+    titleText.textContent = "Aventura dos Sentidos";
+    instructionText.textContent = "Encontre a forma pedida.";
+    draggableShapes.forEach(shape => {
+        const shapeType = shape.dataset.shape;
+        // Mostra a forma se ela fizer parte deste nível
+        if (currentVisibleShapes.includes(shapeType)) {
+            shape.style.display = "block";
+            shape.style.opacity = "1";
+            shape.style.transform = "translate(0, 0)";
+            shape.style.visibility = 'visible'; 
+        } else {
+            shape.style.display = "none";
+        }
+    });
+    
+    // 5. Carrega o primeiro alvo
+    loadSensoryTarget(currentSensoryLevelIndex);
 }
 
 function stopSensoryGame() {
@@ -50,79 +84,60 @@ function stopSensoryGame() {
     if (draggedShape) {
         draggedShape.style.opacity = "1";
         draggedShape.style.transform = "translate(0, 0)";
-        draggedShape.style.visibility = 'visible'; // Garante que está visível
+        draggedShape.style.visibility = 'visible'; 
     }
     draggedShape = null;
     isDragging = false;
 }
 
-// --- 5. Função de Carregar Nível ---
-function loadSensoryLevel(index) {
-    const level = sensoryLevels[index];
+// --- 6. Função de Carregar Alvo ---
+function loadSensoryTarget(index) {
+    // Pega o nome da forma (ex: "circulo")
+    const targetShapeName = currentLevelList[index];
+    // Pega as informações completas (ex: {shape: "circulo", name: "CÍRCULO"})
+    const targetInfo = allShapes.find(s => s.shape === targetShapeName);
+
+    titleText.textContent = `Fase ${index + 1} de ${currentLevelList.length}`;
+    instructionText.textContent = `Arraste o ${targetInfo.name} para a caixa.`;
     
-    titleText.textContent = level.title;
-    instructionText.textContent = level.instruction;
-    feedbackText.textContent = "";
-    feedbackText.className = "";
-    targetZone.dataset.targetShape = level.targetShape; 
-    targetZone.textContent = level.targetText;
-    targetZone.className = "";
-
-    draggableShapes.forEach(shape => {
-        const shapeType = shape.dataset.shape;
-        let showShape = false;
-
-        if (shapeType === 'circulo' || shapeType === 'quadrado' || shapeType === 'triangulo') {
-            showShape = true;
-        }
-        if (currentSensoryDifficulty === 'medio' && shapeType === 'estrela') {
-            showShape = true;
-        }
-        if (currentSensoryDifficulty === 'dificil' && (shapeType === 'estrela' || shapeType === 'pentagono')) {
-            showShape = true;
-        }
-        
-        shape.style.display = showShape ? "block" : "none";
-        shape.style.opacity = "1";
-        shape.style.transform = "translate(0, 0)";
-        shape.style.visibility = 'visible'; // Garante que está visível
-    });
+    // Define o alvo no #target-zone
+    targetZone.dataset.targetShape = targetInfo.shape; 
+    targetZone.textContent = `Solte o ${targetInfo.name} aqui`;
+    targetZone.className = ""; // Limpa a cor verde/vermelha
 }
 
-// --- 6. Lógica de Drag and Drop (Mouse - Inalterada) ---
-
+// --- 7. Lógica de Drag and Drop (Mouse) ---
 function handleDragStart(e) {
     draggedShape = this; 
     isDragging = true;
     e.dataTransfer.setData("text/plain", this.id);
     setTimeout(() => { this.style.opacity = "0.5"; }, 0);
 }
-
 function handleDragEnd() {
     if (isDragging) {
         draggedShape.style.opacity = "1";
-        draggedShape = null;
-        isDragging = false;
-        targetZone.classList.remove("drag-over");
     }
+    draggedShape = null;
+    isDragging = false;
+    targetZone.classList.remove('drag-over'); // Limpa o hover do alvo
 }
-
 function handleDragOver(e) {
     e.preventDefault(); 
-    this.classList.add("drag-over");
+    if (!targetZone.classList.contains('correct-drop')) {
+        targetZone.classList.add("drag-over");
+    }
 }
-
 function handleDragLeave() {
-    this.classList.remove("drag-over");
+    targetZone.classList.remove("drag-over");
 }
-
 function handleDrop(e) {
     e.preventDefault();
     if (!draggedShape) return;
-    checkDropLogic(draggedShape);
+    isDragging = false; // Informa ao handleDragEnd que o drop foi tratado
+    checkDropLogic(draggedShape, targetZone); 
 }
 
-// --- 7. Lógica de Drag and Drop (Touch - CORRIGIDA) ---
+// --- 8. Lógica de Drag and Drop (Touch) ---
 let initialX = 0, initialY = 0, offsetX = 0, offsetY = 0;
 
 function handleTouchStart(e) {
@@ -146,12 +161,9 @@ function handleTouchMove(e) {
     offsetY = currentY;
     draggedShape.style.transform = `translate(${currentX}px, ${currentY}px)`;
     
-    // --- INÍCIO DA CORREÇÃO (VISIBILITY) ---
-    // Usa 'visibility' em vez de 'display' para evitar bugs de layout/desaparecimento
     draggedShape.style.visibility = 'hidden';
     let elementOver = document.elementFromPoint(touch.clientX, touch.clientY);
     draggedShape.style.visibility = 'visible';
-    // --- FIM DA CORREÇÃO ---
     
     if (elementOver && elementOver.closest('#target-zone')) {
         targetZone.classList.add("drag-over");
@@ -164,67 +176,76 @@ function handleTouchEnd(e) {
     if (!isDragging || !draggedShape) return;
     let touch = e.changedTouches[0];
     
-    // --- INÍCIO DA CORREÇÃO (VISIBILITY) ---
     draggedShape.style.visibility = 'hidden';
     let elementOver = document.elementFromPoint(touch.clientX, touch.clientY);
     draggedShape.style.visibility = 'visible';
-    // --- FIM DA CORREÇÃO ---
     
     const currentDraggedShape = draggedShape;
-    isDragging = false;
     draggedShape = null;
+    isDragging = false; 
     offsetX = 0;
     offsetY = 0;
-    targetZone.classList.remove("drag-over");
+    
+    targetZone.classList.remove('drag-over');
     
     if (elementOver && elementOver.closest('#target-zone')) {
-        checkDropLogic(currentDraggedShape);
+        checkDropLogic(currentDraggedShape, targetZone);
     } else {
         currentDraggedShape.style.opacity = "1";
         currentDraggedShape.style.transform = "translate(0, 0)";
     }
 }
 
-// --- 8. Lógica de Verificação (Inalterada) ---
+// --- 9. Lógica de Verificação (Alvo Único) ---
 
-function checkDropLogic(shapeElement) {
-    if (!shapeElement) return;
+function checkDropLogic(shapeElement, targetBox) {
+    if (!shapeElement || !targetBox) return;
+
     const shapeType = shapeElement.dataset.shape;
-    const targetType = targetZone.dataset.targetShape;
+    const targetType = targetBox.dataset.targetShape;
+
     if (shapeType === targetType) {
-        handleCorrectDrop(shapeElement);
+        handleCorrectDrop(shapeElement, targetBox);
     } else {
-        handleWrongDrop(shapeElement);
+        handleWrongDrop(shapeElement, targetBox);
     }
 }
 
-function handleCorrectDrop(shapeElement) {
+function handleCorrectDrop(shapeElement, targetBox) {
     console.log("ACERTOU - SENTIDOS!");
-    targetZone.textContent = "Muito bem!";
-    targetZone.classList.add("correct-drop");
-    feedbackText.textContent = "Parabéns, você achou o " + targetZone.dataset.targetShape + "!";
+    
+    targetBox.classList.add("correct-drop");
+    targetBox.textContent = "✓ Certo!"; 
+    shapeElement.style.display = "none"; // Esconde a forma correta
+
+    feedbackText.textContent = "Parabéns, você achou o " + targetBox.dataset.targetShape + "!";
     feedbackText.className = "correct";
     
-    // Esconde a forma
-    shapeElement.style.display = "none";
-
+    // Avança para o próximo alvo
+    currentSensoryLevelIndex++;
+    
     setTimeout(() => {
-        currentSensoryLevelIndex++;
-        if (currentSensoryLevelIndex < sensoryLevels.length) {
-            loadSensoryLevel(currentSensoryLevelIndex);
+        // Verifica se completou todos os alvos do nível
+        if (currentSensoryLevelIndex < currentLevelList.length) {
+            loadSensoryTarget(currentSensoryLevelIndex);
         } else {
+            // Vitória
             titleText.textContent = "Parabéns!";
-            instructionText.textContent = "Você completou todas as fases!";
-            feedbackText.textContent = "Você é ótimo com as formas!";
+            instructionText.textContent = "Você encontrou todas as formas!";
+            feedbackText.textContent = "Muito bem!";
             feedbackText.className = "correct";
-       targetZone.textContent = "VITÓRIA!";
-        }
+            targetZone.textContent = "VITÓRIA!";
+}
     }, 2000); 
 }
 
-function handleWrongDrop(shapeElement) {
+function handleWrongDrop(shapeElement, targetBox) {
     console.log("ERROU - SENTIDOS!");
-    targetZone.classList.add("wrong-drop");
+    
+    if (targetBox) {
+        targetBox.classList.add("wrong-drop");
+ }
+    
     feedbackText.textContent = "Oops! Tente de novo.";
     feedbackText.className = "wrong";
     
@@ -232,27 +253,30 @@ function handleWrongDrop(shapeElement) {
     shapeElement.style.transform = "translate(0, 0)";
     
     setTimeout(() => {
-        targetZone.classList.remove("wrong-drop");
+        if (targetBox) {
+            targetBox.classList.remove("wrong-drop");
+        }
         feedbackText.textContent = "";
         feedbackText.className = "";
     }, 1000);
 }
 
-
-// --- 9. Inicialização ÚNICA dos Listeners ---
+// --- 10. Inicialização ÚNICA dos Listeners ---
 function addDragDropListeners() {
+    // Adiciona listeners às 7 formas
     draggableShapes.forEach(shape => {
         shape.addEventListener("dragstart", handleDragStart);
         shape.addEventListener("dragend", handleDragEnd);
         shape.addEventListener("touchstart", handleTouchStart, { passive: false });
     });
-
+    
+    // Adiciona listeners ao ALVO ÚNICO
     targetZone.addEventListener("dragover", handleDragOver);
     targetZone.addEventListener("dragleave", handleDragLeave);
     targetZone.addEventListener("drop", handleDrop);
-
-   document.addEventListener("touchmove", handleTouchMove, { passive: false });
+    
+    // Listeners globais de toque
+    document.addEventListener("touchmove", handleTouchMove, { passive: false });
     document.addEventListener("touchend", handleTouchEnd, { passive: false });
 }
-
 addDragDropListeners();

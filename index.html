@@ -4,9 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Jogo do Dia a Dia</title>
+    
     <link rel="stylesheet" href="style.css">
-
-        <meta name="theme-color" content="#FF6B6B" />
+    <meta name="theme-color" content="#FF6B6B" />
     <link rel="manifest" href="manifest.json">
 </head>
 <body>
@@ -26,7 +26,7 @@
             </div>
 
             <div class="menu-level-group">
-              _ <h3>Nível 2: Jogo das Emoções</h3>
+                <h3>Nível 2: Jogo das Emoções</h3>
                 <div class="difficulty-buttons">
                     <button class="menu-btn difficulty" data-target="nivel-emocoes" data-difficulty="facil">Fácil</button>
                     <button class="menu-btn difficulty" data-target="nivel-emocoes" data-difficulty="medio">Médio</button>
@@ -68,7 +68,7 @@
                     <div class="arvore" style="bottom: 8%; left: 75%;"></div>
                 </div>
                 <div id="interface">
-                  _ <p id="mensagem">O que você deve fazer?</p>
+                    <p id="mensagem">O que você deve fazer?</p>
                     <div id="botoes-acao">
                         <button data-action="atravessar">ATRAVESSAR</button>
                     </div>
@@ -81,6 +81,8 @@
             <div id="emotion-game-container">
                 <h1>O que esta pessoa está sentindo?</h1>
         
+                                <div id="emotion-countdown"></div> 
+        
                 <div id="emotion-timer">
                     <div id="emotion-timer-bar"></div>
                 </div>
@@ -89,53 +91,56 @@
                     <img id="emotion-face-image" src="" alt="Expressão facial">
                 </div>
                 
-                                                <div id="emotion-options-container">
+                <div id="emotion-options-container">
                                     </div>
-                                
+                
                 <div id="emotion-feedback-text"></div>
             </div>
         </section>
 
-        <section id="nivel-sentidos" class="game-screen">
+       <section id="nivel-sentidos" class="game-screen">
             <button class="btn-voltar" data-target="menu-principal"> &lt; Voltar ao Menu</button>
-            <div id="sensory-game-container">
-                <h1 id="sensory-title">Fase 1: Encontre o Círculo</h1>
-                <p id="sensory-instruction">Arraste a forma correta para a caixa.</p>
     
-                <div id="draggable-shapes">
+            <div id="sensory-game-container">
+                <h1 id="sensory-title">Aventura dos Sentidos</h1>
+                <p id="sensory-instruction">Encontre a forma pedida.</p>
+    
+                                <div id="draggable-shapes">
                     <div id="shape-circulo" class="shape circulo" draggable="true" data-shape="circulo"></div>
                     <div id="shape-quadrado" class="shape quadrado" draggable="true" data-shape="quadrado"></div>
                     <div id="shape-triangulo" class="shape triangulo" draggable="true" data-shape="triangulo"></div>
                     <div id="shape-estrela" class="shape estrela" draggable="true" data-shape="estrela"></div>
                     <div id="shape-pentagono" class="shape pentagono" draggable="true" data-shape="pentagono"></div>
+                    <div id="shape-hexagono" class="shape hexagono" draggable="true" data-shape="hexagono"></div>
+                    <div id="shape-losango" class="shape losango" draggable="true" data-shape="losango"></div>
                 </div>
     
-                <div id="target-zone" data-target-shape="circulo">
-                 Solte o CÍRCULO aqui
-                </div>
-                <div id="sensory-feedback-text"></div>
+                                                <div id="target-zone" data-target-shape="">
+                                    </div>
+                    
+                                <div id="sensory-feedback-text"></div>
             </div>
         </section>
 
     </div> 
     
-    <script src="jogo-rua.js"></script>
+        <script src="jogo-rua.js"></script>
     <script src="jogo-emocoes.js"></script>
     <script src="jogo-sentidos.js"></script> 
     <script src="script.js"></script>
 
-        <script>
-        if ('serviceWorker' in navigator) {
-          window.addEventListener('load', () => {
-            navigator.serviceWorker.register('./sw.js') 
-              .then(registration => {
-                console.log('Service Worker registrado com sucesso:', registration.scope);
-              })
-              .catch(error => {
-                console.log('Falha ao registrar o Service Worker:', error);
-              });
-          });
-        }
-    </script>
+      	<script>
+  		if ('serviceWorker' in navigator) {
+  			window.addEventListener('load', () => {
+  				navigator.serviceWorker.register('./sw.js') 
+  					.then(registration => {
+  						console.log('Service Worker registrado com sucesso:', registration.scope);
+  					})
+  					.catch(error => {
+  						console.log('Falha ao registrar o Service Worker:', error);
+  					});
+  			});
+  		}
+  	</script>
 </body>
 </html>

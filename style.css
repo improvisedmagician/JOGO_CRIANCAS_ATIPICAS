@@ -1,11 +1,11 @@
 /* PALETA DE CORES */
 :root {
-    --cor-fundo: #C9EFFF; /* Céu azul claro */
-    --cor-principal: #FF6B6B; /* Botão chamativo (ex: vermelho/rosa) */
+    --cor-fundo: #C9EFFF;
+    --cor-principal: #FF6B6B;
     --cor-principal-hover: #FF4D4D;
     --cor-texto: #333;
-    --cor-sucesso: #76FF7A; /* Verde sinal bem brilhante */
-    --cor-perigo: #FF5A5F; /* Vermelho sinal bem brilhante */
+    --cor-sucesso: #76FF7A;
+    --cor-perigo: #FF5A5F;
     --cor-atencao: #FFD966;
     --cor-luz-apagada: #555;
     --cor-grama: #9DDE8B;
@@ -15,7 +15,7 @@
     --cor-arvore-copa: #4CAF50;
     --tempo-travessia: 2s;
     --tempo-sinal: 1.5s; 
-    --tempo-carro: 4s; /* Padrão, será alterado pelo JS */
+    --tempo-carro: 4s; 
 }
 
 /* GERAL */
@@ -41,7 +41,7 @@ body {
     background-color: #fff;
     box-shadow: 0 4px 10px rgba(0,0,0,0.1);
     text-align: center;
-    margin: 0 auto; /* Centraliza o container do jogo */
+    margin: 0 auto;
 }
 
 /* CENA */
@@ -67,7 +67,7 @@ body {
 #estrada {
     position: absolute;
     width: 100%;
-    height: 50%; /* Ocupa o meio */
+    height: 50%;
     top: 25%;
     background-color: var(--cor-asfalto);
     z-index: 2;
@@ -82,7 +82,7 @@ body {
         90deg, #fff, #fff 15px, transparent 15px, transparent 30px
     );
     opacity: 0.8;
-    z-index: 3; /* Abaixo dos carros */
+    z-index: 3;
 }
 
 /* SEMÁFORO */
@@ -110,7 +110,6 @@ body {
     transition: all 0.3s;
 }
 
-/* ANIMAÇÕES DO SEMÁFORO */
 @keyframes pulse {
     0% { transform: scale(1); box-shadow: 0 0 10px var(--cor-acesa); }
     50% { transform: scale(1.1); box-shadow: 0 0 20px var(--cor-acesa); }
@@ -157,7 +156,6 @@ body {
 }
 #personagem.atravessando { bottom: 65%; }
 
-/* Animação de erro */
 #personagem.erro-run-back {
     animation: runBack 0.8s ease-in-out;
 }
@@ -176,7 +174,7 @@ body {
     background-size: contain;
     background-repeat: no-repeat;
     background-position: center;
-    z-index: 5; /* Acima da faixa */
+    z-index: 5;
     filter: drop-shadow(2px 2px 2px rgba(0,0,0,0.3));
     animation: moveCarro var(--tempo-carro) linear;
     animation-fill-mode: forwards;
@@ -187,6 +185,11 @@ body {
 @keyframes moveCarro {
     from { left: -100px; }
     to { left: 110%; }
+}
+
+/* REGRA DE PAUSA (MELHORIA 1) */
+.carro.paused {
+    animation-play-state: paused;
 }
 
 /* CENÁRIO */
@@ -261,11 +264,9 @@ body {
     box-shadow: 0 4px 10px rgba(0,0,0,0.1);
 }
 
-/* Lógica de esconder/mostrar telas */
 .game-screen { display: none; width: 100%; }
 .game-screen.active-screen { display: block; }
 
-/* Estilos do Menu Principal */
 #menu-principal h1 {
     color: var(--cor-principal);
     text-align: center;
@@ -303,7 +304,6 @@ body {
     border-bottom-width: 2px;
 }
 
-/* Botão de Voltar */
 .btn-voltar {
     font-size: 1em;
     padding: 8px 12px;
@@ -376,9 +376,6 @@ body {
     border-bottom-color: #D94848;
 }
 
-/* ============================================= */
-/* NOVOS ESTILOS DE PLACAR (Acertos/Erros) */
-/* ============================================= */
 .score-container {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -387,8 +384,6 @@ body {
     margin: -10px 10px 10px 0;
 }
 
-
-/* Placares Secundários (Acertos/Erros) */
 .score-display.hits,
 .score-display.misses {
     font-size: 1em;
@@ -410,7 +405,6 @@ body {
    REGRAS JOGO DAS EMOÇÕES
    ======================== */
 
-/* Container principal do jogo das emoções */
 #nivel-emocoes #emotion-game-container {
     background-color: #ffffff;
     border-radius: 15px;
@@ -418,7 +412,7 @@ body {
     width: 90%;
     max-width: 500px;
     text-align: center;
-    margin: 20px auto; /* Centraliza dentro da section */
+    margin: 20px auto;
 }
 
 #nivel-emocoes h1 {
@@ -439,7 +433,6 @@ body {
     object-fit: cover; 
 }
 
-/* Classes de feedback */
 #nivel-emocoes #emotion-feedback-text {
     margin-top: 15px;
     font-size: 1.1em;
@@ -448,11 +441,11 @@ body {
 }
 
 #nivel-emocoes .correct {
-    color: #28a745; /* Verde */
+    color: #28a745;
 }
 
 #nivel-emocoes .wrong {
-    color: #dc3545; /* Vermelho */
+    color: #dc3545;
 }
 
 /* ============================
@@ -478,8 +471,6 @@ body {
     font-size: 1.1em;
 }
 
-/* --- Área de Arrastar (Draggable Shapes) --- */
-
 #nivel-sentidos #draggable-shapes {
     display: flex;
     justify-content: space-around;
@@ -488,7 +479,7 @@ body {
     border-radius: 10px;
     margin-top: 20px;
     padding: 10px;
-    flex-wrap: wrap; /* Permite que as formas quebrem a linha */
+    flex-wrap: wrap; 
     height: auto;
     min-height: 150px;
 }
@@ -496,10 +487,10 @@ body {
 #nivel-sentidos .shape {
     width: 80px;
     height: 80px;
-    cursor: grab; /* Indica que é arrastável */
+    cursor: grab; 
     transition: transform 0.2s, opacity 0.2s;
-    display: none; /* Escondido por padrão, JS vai mostrar */
-    margin: 5px; /* Espaçamento para o wrap */
+    display: none; 
+    margin: 5px; 
 }
 
 #nivel-sentidos .shape:hover {
@@ -508,76 +499,91 @@ body {
 
 /* As formas geométricas */
 #nivel-sentidos .circulo {
-    background-color: #e91e63; /* Rosa */
-    border-radius: 50%; /* Faz ser um círculo */
+    background-color: #e91e63; 
+    border-radius: 50%;
 }
 #nivel-sentidos .quadrado {
-    background-color: #00bcd4; /* Ciano */
+    background-color: #00bcd4; 
 }
-
-/* --- INÍCIO DA CORREÇÃO DO TRIÂNGULO --- */
 #nivel-sentidos .triangulo {
     width: 0;
     height: 0;
     background-color: transparent;
-    border-left: 40px solid transparent; /* Era 45px */
-    border-right: 40px solid transparent; /* Era 45px */
-    border-bottom: 80px solid #ffc107; /* Amarelo */
+    border-left: 40px solid transparent; 
+    border-right: 40px solid transparent; 
+    border-bottom: 80px solid #ffc107; 
 }
-/* --- FIM DA CORREÇÃO DO TRIÂNGULO --- */
-
-/* Estilo da Estrela */
 #nivel-sentidos .estrela {
     width: 80px;
     height: 80px;
-    background-color: #FFEB3B; /* Amarelo */
+    background-color: #FFEB3B;
     clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
 }
-
-/* Estilo do Pentágono */
 #nivel-sentidos .pentagono {
     width: 80px;
     height: 80px;
-    background-color: #9C27B0; /* Roxo */
+    background-color: #9C27B0;
     clip-path: polygon(50% 0%, 100% 38%, 82% 100%, 18% 100%, 0% 38%);
+}
+/* NOVAS FORMAS (HEXÁGONO E LOSANGO) */
+#nivel-sentidos .hexagono {
+    width: 80px;
+    height: 80px;
+    background-color: #3F51B5; /* Azul Escuro */
+    clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);
+}
+#nivel-sentidos .losango {
+    width: 80px;
+    height: 80px;
+    background-color: #FF5722; /* Laranja Escuro */
+    clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
 }
 
 
-/* --- Área de Soltar (Target Zone) --- */
+/* === ESTILOS JOGO SENTIDOS (Organização) === */
 
+/* Remove o estilo antigo do alvo único */
 #nivel-sentidos #target-zone {
-    height: 150px;
+    display: none;
+}
+
+/* NOVO: Container para as caixas de alvo */
+#nivel-sentidos #sensory-target-container {
+    display: grid;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+/* NOVO: Estilo para CADA caixa de alvo */
+#nivel-sentidos .target-box {
+    height: 100px;
     border: 3px dashed #4a90e2;
     border-radius: 10px;
     display: flex;
     justify-content: center;
     align-items: center;
-    font-size: 1.3em;
+    font-size: 1.1em;
     font-weight: bold;
     color: #4a90e2;
-    margin-top: 20px;
     transition: background-color 0.2s, border-color 0.2s;
 }
 
-/* Feedback visual quando o item está sendo arrastado por CIMA do alvo */
-#nivel-sentidos #target-zone.drag-over {
+#nivel-sentidos .target-box.drag-over {
     background-color: #e0eafc;
     border-color: #357abd;
 }
-
-/* Feedback visual quando a forma é solta */
-#nivel-sentidos #target-zone.correct-drop {
-    background-color: #d4edda; /* Verde claro */
+#nivel-sentidos .target-box.correct-drop {
+    background-color: #d4edda;
     border-color: #28a745;
+    color: #28a745;
+    content: "✓"; 
+    font-size: 2em;
 }
-
-#nivel-sentidos #target-zone.wrong-drop {
-    background-color: #f8d7da; /* Vermelho claro */
+#nivel-sentidos .target-box.wrong-drop {
+    background-color: #f8d7da;
     border-color: #dc3545;
 }
 
-
-/* Feedback em texto */
 #nivel-sentidos #sensory-feedback-text {
     margin-top: 15px;
     font-size: 1.1em;
@@ -604,7 +610,6 @@ body {
     margin: 10px 0;
     display: none; 
 }
-
 #emotion-timer-bar {
     height: 100%;
     width: 100%;
@@ -613,7 +618,6 @@ body {
     transform: translateX(-100%);
     transition: transform 0.1s linear; 
 }
-
 #emotion-timer-bar.animating {
     transform: translateX(0%);
     transition: transform linear;
@@ -639,115 +643,98 @@ body {
     background-color: #e9e9e9;
 }
 
-/* 1. Alegria (Amarelo) */
 #nivel-emocoes .option-btn[data-emotion="Alegria"] {
-    color: #F8D346;
-    border-color: #F8D346;
+    color: #F8D346; border-color: #F8D346;
 }
 #nivel-emocoes .option-btn[data-emotion="Alegria"]:hover {
     background-color: #FFF9E1;
 }
-
-/* 2. Tristeza (Azul) */
 #nivel-emocoes .option-btn[data-emotion="Tristeza"] {
-    color: #4189C6;
-    border-color: #4189C6;
+    color: #4189C6; border-color: #4189C6;
 }
 #nivel-emocoes .option-btn[data-emotion="Tristeza"]:hover {
     background-color: #E2ECF4;
 }
-
-/* 3. Raiva (Vermelho) */
 #nivel-emocoes .option-btn[data-emotion="Raiva"] {
-    color: #D53A2E;
-    border-color: #D53A2E;
+    color: #D53A2E; border-color: #D53A2E;
 }
 #nivel-emocoes .option-btn[data-emotion="Raiva"]:hover {
     background-color: #F7E3E1;
 }
-
-/* 4. Nojinho (Verde) */
 #nivel-emocoes .option-btn[data-emotion="Nojinho"] {
-    color: #82C341;
-    border-color: #82C341;
+    color: #82C341; border-color: #82C341;
 }
 #nivel-emocoes .option-btn[data-emotion="Nojinho"]:hover {
     background-color: #EDF5E3;
 }
-
-/* 5. Medo (Roxo) */
 #nivel-emocoes .option-btn[data-emotion="Medo"] {
-    color: #9B56A1;
-    border-color: #9B56A1;
+    color: #9B56A1; border-color: #9B56A1;
 }
 #nivel-emocoes .option-btn[data-emotion="Medo"]:hover {
     background-color: #F0E6F1;
 }
-
-/* 6. Vergonha (Rosa) */
 #nivel-emocoes .option-btn[data-emotion="Vergonha"] {
-    color: #E780B1;
-    border-color: #E780B1;
+    color: #E780B1; border-color: #E780B1;
 }
 #nivel-emocoes .option-btn[data-emotion="Vergonha"]:hover {
     background-color: #FADDEA;
 }
-
-/* 7. Tédio (Cinza/Azul) */
 #nivel-emocoes .option-btn[data-emotion="Tédio"] {
-    color: #8F99A9;
-    border-color: #8F99A9;
+    color: #8F99A9; border-color: #8F99A9;
 }
 #nivel-emocoes .option-btn[data-emotion="Tédio"]:hover {
     background-color: #EBECEE;
 }
-
-/* 8. Ansiedade (Laranja) */
 #nivel-emocoes .option-btn[data-emotion="Ansiedade"] {
-    color: #F58A4D;
-    border-color: #F58A4D;
+    color: #F58A4D; border-color: #F58A4D;
 }
 #nivel-emocoes .option-btn[data-emotion="Ansiedade"]:hover {
     background-color: #FDEBE1;
 }
 
+/* ========================
+   ESTILOS CRONÔMETRO NUMÉRICO (EMOÇÕES)
+   ======================== */
+#emotion-countdown {
+    font-size: 2em;
+    font-weight: bold;
+    color: var(--cor-perigo);
+    height: 1.2em; /* Garante espaço */
+    margin-bottom: 5px;
+    text-align: center;
+}
 
 /* ========================
    MELHORIAS DE RESPONSIVIDADE (Celulares Pequenos)
    ======================== */
-
 @media (max-width: 400px) {
 
     /* NÍVEL 3 (SENTIDOS) */
     #nivel-sentidos .shape {
-        /* Diminui o tamanho das formas */
         width: 60px;
         height: 60px;
         margin: 2px;
     }
-
-    /* --- INÍCIO DA CORREÇÃO DO TRIÂNGULO (Mobile) --- */
     #nivel-sentidos .triangulo {
-        /* Ajusta o triângulo para o novo tamanho (60x60)
-           Mantendo a base (width) e a altura iguais */
-        width: 0; /* Necessário para a técnica de borda */
-        height: 0; /* Necessário para a técnica de borda */
-        background-color: transparent; /* A cor vem da borda */
-        border-left: 30px solid transparent; /* Metade da base (60px / 2) */
-        border-right: 30px solid transparent; /* Metade da base */
-        border-bottom: 60px solid #ffc107; /* A altura e a cor */
+        width: 0; height: 0; background-color: transparent;
+        border-left: 30px solid transparent; 
+        border-right: 30px solid transparent; 
+        border-bottom: 60px solid #ffc107; 
     }
-    /* --- FIM DA CORREÇÃO DO TRIÂNGULO (Mobile) --- */
-
-    #nivel-sentidos #target-zone {
-        /* Diminui a caixa de alvo */
-        height: 120px;
-        font-size: 1.1em;
+    /* NOVAS FORMAS (Mobile) */
+    #nivel-sentidos .hexagono {
+        width: 60px; height: 60px;
+    }
+    #nivel-sentidos .losango {
+        width: 60px; height: 60px;
+    }
+    #nivel-sentidos .target-box {
+        height: 80px;
+        font-size: 1em;
     }
 
     /* NÍVEL 2 (EMOÇÕES) */
     #nivel-emocoes .option-btn {
-        /* Diminui o padding e o texto para caber */
         font-size: 1em;
         padding: 12px;
     }
@@ -759,5 +746,54 @@ body {
     }
     #mensagem {
         font-size: 1em;
+    }
+}
+/* ============================
+   REGRAS AVENTURA DOS SENTIDOS (ATUALIZAÇÃO - Alvo Único)
+   ============================ */
+
+/* Remove o container de organização */
+#nivel-sentidos #sensory-target-container {
+    display: none;
+}
+
+/* Restaura o alvo único */
+#nivel-sentidos #target-zone {
+    display: flex; /* <-- Muda de 'none' para 'flex' */
+    height: 150px;
+    border: 3px dashed #4a90e2;
+    border-radius: 10px;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.3em;
+    font-weight: bold;
+    color: #4a90e2;
+    margin-top: 20px;
+    transition: background-color 0.2s, border-color 0.2s;
+}
+
+/* Feedback visual quando o item está sendo arrastado por CIMA do alvo */
+#nivel-sentidos #target-zone.drag-over {
+    background-color: #e0eafc;
+    border-color: #357abd;
+}
+
+/* Feedback visual quando a forma CORRETA é solta */
+#nivel-sentidos #target-zone.correct-drop {
+    background-color: #d4edda; /* Verde claro */
+    border-color: #28a745;
+}
+
+/* Feedback visual quando a forma ERRADA é solta */
+#nivel-sentidos #target-zone.wrong-drop {
+    background-color: #f8d7da; /* Vermelho claro */
+    border-color: #dc3545;
+}
+
+/* Responsividade para o alvo único */
+@media (max-width: 400px) {
+    #nivel-sentidos #target-zone {
+        height: 120px;
+        font-size: 1.1em;
     }
 }
