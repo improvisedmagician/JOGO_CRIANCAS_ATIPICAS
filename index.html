@@ -7,10 +7,15 @@
     
     <link rel="stylesheet" href="style.css">
     <meta name="theme-color" content="#FF6B6B" />
-    <link rel="manifest" href="manifest.json">
-</head>
+    
+    </head>
 <body>
     <div id="app-container">
+
+        <div id="volume-control-widget">
+            <span id="volume-icon">🔊</span>
+            <input type="range" id="volume-slider" min="0" max="1" step="0.1" value="1">
+        </div>
 
         <section id="menu-principal" class="game-screen active-screen">
             <h1>Jogo do Dia a Dia</h1>
@@ -43,9 +48,25 @@
                 </div>
             </div>
             
+            <div class="menu-level-group">
+                <h3>Nível 4: EcoAventura</h3>
+                <div class="difficulty-buttons">
+                    <button class="menu-btn difficulty" data-target="nivel-reciclagem" data-difficulty="facil">Fácil</button>
+                    <button class="menu-btn difficulty" data-target="nivel-reciclagem" data-difficulty="medio">Médio</button>
+                    <button class="menu-btn difficulty" data-target="nivel-reciclagem" data-difficulty="dificil">Difícil</button>
+                </div>
+            </div>
+            
+            <div class="menu-level-group">
+                <h3>Nível 5: Tartaruga Zen 🐢</h3>
+                <div class="difficulty-buttons">
+                    <button class="menu-btn" data-target="nivel-respiracao">Iniciar</button>
+                </div>
+            </div>
+            
         </section>
 
-        <section id="nivel-rua" class="game-screen">
+                <section id="nivel-rua" class="game-screen">
             <button class="btn-voltar" data-target="menu-principal"> &lt; Voltar ao Menu</button>
             <div class="score-container">
                 <div class="score-display hits">ACERTOS: <span id="hits-count">0</span></div>
@@ -75,30 +96,25 @@
                 </div>
             </main>
         </section>
-
-        <section id="nivel-emocoes" class="game-screen">
+        
+                <section id="nivel-emocoes" class="game-screen">
             <button class="btn-voltar" data-target="menu-principal"> &lt; Voltar ao Menu</button>
             <div id="emotion-game-container">
                 <h1>O que esta pessoa está sentindo?</h1>
-        
-                                <div id="emotion-countdown"></div> 
-        
+                <div id="emotion-countdown"></div> 
                 <div id="emotion-timer">
                     <div id="emotion-timer-bar"></div>
                 </div>
-
                 <div id="face-display">
                     <img id="emotion-face-image" src="" alt="Expressão facial">
                 </div>
-                
                 <div id="emotion-options-container">
                                     </div>
-                
                 <div id="emotion-feedback-text"></div>
             </div>
         </section>
-
-       <section id="nivel-sentidos" class="game-screen">
+        
+                <section id="nivel-sentidos" class="game-screen">
             <button class="btn-voltar" data-target="menu-principal"> &lt; Voltar ao Menu</button>
     
             <div id="sensory-game-container">
@@ -115,22 +131,62 @@
                     <div id="shape-losango" class="shape losango" draggable="true" data-shape="losango"></div>
                 </div>
     
-                                                <div id="target-zone" data-target-shape="">
+                                <div id="target-zone" data-target-shape="">
                                     </div>
-                    
+    
                                 <div id="sensory-feedback-text"></div>
             </div>
+        </section>
+        
+                <section id="nivel-reciclagem" class="game-screen">
+            <button class="btn-voltar" data-target="menu-principal"> &lt; Voltar ao Menu</button>
+            <div id="recycle-game-container">
+                <h1 id="recycle-title">EcoAventura ♻️</h1>
+                <p id="recycle-instruction">Arraste o lixo para a lixeira correta!</p>
+                <div id="recycle-items-container">
+                                    </div>
+                <div id="recycle-bin-container">
+                                    </div>
+                <div id="recycle-feedback-text"></div>
+       </div>
+        </section>
+
+                <section id="nivel-respiracao" class="game-screen">
+            <button class="btn-voltar" data-target="menu-principal"> &lt; Voltar ao Menu</button>
+            <div id="zen-container">
+                <h1 id="zen-title">Respira e Relaxe 🐢</h1>
+                <div id="zen-animation-container">
+                    <div id="zen-bubble"></div>
+                </div>
+                <p id="zen-instruction">Acompanhe a bolha...</p>
+            </div>
+            
+            <audio id="audio-ambient-zen" loop src="sounds/ambient-zen.wav"></audio>
+            <audio id="audio-zen-voice" src=""></audio>
+            <audio id="audio-zen-sfx" src=""></audio>
+            
         </section>
 
     </div> 
     
-        <script src="jogo-rua.js"></script>
-    <script src="jogo-emocoes.js"></script>
+    <script src="jogo-rua.js"></script>
+  	<script src="jogo-emocoes.js"></script>
     <script src="jogo-sentidos.js"></script> 
-    <script src="script.js"></script>
+    <script src="jogo-reciclagem.js"></script> 
+    <script src="jogo-respiracao.js"></script> 
+  	<script src="script.js"></script>
 
-      	<script>
-  		if ('serviceWorker' in navigator) {
+  	  	<script>
+  		// Só executa se for em um servidor (http ou https)
+  		if ('serviceWorker' in navigator && (window.location.protocol === 'http:' || window.location.protocol === 'https:')) {
+  			
+  			// 1. Adiciona o Manifest dinamicamente
+  			var link = document.createElement('link');
+  			link.rel = 'manifest';
+  			link.href = 'manifest.json';
+  			document.head.appendChild(link);
+
+  			// 2. Registra o Service Worker
   			window.addEventListener('load', () => {
   				navigator.serviceWorker.register('./sw.js') 
   					.then(registration => {
@@ -140,7 +196,9 @@
   						console.log('Falha ao registrar o Service Worker:', error);
   					});
   			});
+  		} else {
+  			console.log('PWA/Service Worker não suportado ou executando localmente (file://).');
   		}
   	</script>
-</body>
+  	</body>
 </html>

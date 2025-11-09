@@ -187,7 +187,6 @@ body {
     to { left: 110%; }
 }
 
-/* REGRA DE PAUSA (MELHORIA 1) */
 .carro.paused {
     animation-play-state: paused;
 }
@@ -262,6 +261,7 @@ body {
     background-color: #fff;
     border-radius: 10px;
     box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    position: relative; /* Necessário para o controle de volume */
 }
 
 .game-screen { display: none; width: 100%; }
@@ -525,64 +525,56 @@ body {
     background-color: #9C27B0;
     clip-path: polygon(50% 0%, 100% 38%, 82% 100%, 18% 100%, 0% 38%);
 }
-/* NOVAS FORMAS (HEXÁGONO E LOSANGO) */
 #nivel-sentidos .hexagono {
     width: 80px;
     height: 80px;
-    background-color: #3F51B5; /* Azul Escuro */
+    background-color: #3F51B5; 
     clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);
 }
 #nivel-sentidos .losango {
     width: 80px;
     height: 80px;
-    background-color: #FF5722; /* Laranja Escuro */
+    background-color: #FF5722; 
     clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
 }
 
 
-/* === ESTILOS JOGO SENTIDOS (Organização) === */
+/* --- INÍCIO DA CORREÇÃO (CSS do Nível 3) --- */
 
-/* Remove o estilo antigo do alvo único */
-#nivel-sentidos #target-zone {
+/* Esconde o container de organização (da V15) */
+#nivel-sentidos #sensory-target-container {
     display: none;
 }
 
-/* NOVO: Container para as caixas de alvo */
-#nivel-sentidos #sensory-target-container {
-    display: grid;
-    gap: 10px;
-    margin-top: 20px;
-}
-
-/* NOVO: Estilo para CADA caixa de alvo */
-#nivel-sentidos .target-box {
-    height: 100px;
+/* MOSTRA o container de alvo único (da V16) */
+#nivel-sentidos #target-zone {
+    display: flex; 
+    height: 150px;
     border: 3px dashed #4a90e2;
     border-radius: 10px;
-    display: flex;
     justify-content: center;
     align-items: center;
-    font-size: 1.1em;
+    font-size: 1.3em;
     font-weight: bold;
     color: #4a90e2;
+    margin-top: 20px;
     transition: background-color 0.2s, border-color 0.2s;
 }
 
-#nivel-sentidos .target-box.drag-over {
+#nivel-sentidos #target-zone.drag-over {
     background-color: #e0eafc;
     border-color: #357abd;
 }
-#nivel-sentidos .target-box.correct-drop {
+#nivel-sentidos #target-zone.correct-drop {
     background-color: #d4edda;
     border-color: #28a745;
-    color: #28a745;
-    content: "✓"; 
-    font-size: 2em;
 }
-#nivel-sentidos .target-box.wrong-drop {
+#nivel-sentidos #target-zone.wrong-drop {
     background-color: #f8d7da;
     border-color: #dc3545;
 }
+/* --- FIM DA CORREÇÃO (CSS do Nível 3) --- */
+
 
 #nivel-sentidos #sensory-feedback-text {
     margin-top: 15px;
@@ -598,7 +590,7 @@ body {
 }
 
 /* ========================
-   ESTILOS JOGO DAS EMOÇÕES (DIFICULDADE)
+   REGRAS JOGO DAS EMOÇÕES
    ======================== */
 
 #emotion-timer {
@@ -699,9 +691,200 @@ body {
     font-size: 2em;
     font-weight: bold;
     color: var(--cor-perigo);
-    height: 1.2em; /* Garante espaço */
+    height: 1.2em;
     margin-bottom: 5px;
     text-align: center;
+}
+
+/* ============================
+   REGRAS NÍVEL 4: ECOAVENTURA
+   ============================ */
+
+#nivel-reciclagem #recycle-game-container {
+    background-color: #fff;
+    border-radius: 15px;
+    padding: 20px;
+    width: 90%;
+    max-width: 700px;
+    text-align: center;
+    margin: 20px auto;
+}
+#nivel-reciclagem #recycle-items-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #131418;
+    border-radius: 10px;
+    margin: 20px auto;
+    padding: 20px;
+    height: 150px;
+    width: 90%;
+}
+#nivel-reciclagem .recycle-item {
+    width: 100px;
+    height: 100px;
+    cursor: grab;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    transition: transform 0.2s, opacity 0.2s;
+}
+#nivel-reciclagem .recycle-item:hover {
+    transform: scale(1.1);
+}
+.recycle-item[data-item="garrafa-pet"] {
+    background-image: url('images/trash/garrafa-pet.png');
+}
+.recycle-item[data-item="jornal"] {
+    background-image: url('images/trash/jornal.png');
+}
+.recycle-item[data-item="lata-refri"] {
+    background-image: url('images/trash/lata-refri.png');
+}
+.recycle-item[data-item="garrafa-vidro"] {
+    background-image: url('images/trash/garrafa-vidro.png');
+}
+.recycle-item[data-item="casca-banana"] {
+    background-image: url('images/trash/casca-banana.png');
+}
+#nivel-reciclagem #recycle-bin-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-top: 20px;
+}
+#nivel-reciclagem .recycle-bin {
+    height: 120px;
+    border: 4px dashed #aaa;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column; 
+    justify-content: center;
+    align-items: center;
+    font-size: 1.1em;
+    font-weight: bold;
+    color: #333;
+    transition: background-color 0.2s, border-color 0.2s;
+}
+#nivel-reciclagem .recycle-bin::before {
+    font-size: 2.5em;
+    margin-bottom: 5px;
+}
+.recycle-bin[data-bin="plastico"] { 
+    border-color: #FF0000; color: #FF0000; content: "♻️";
+}
+.recycle-bin[data-bin="plastico"]::before { content: "🧴"; }
+.recycle-bin[data-bin="papel"] { 
+    border-color: #0000FF; color: #0000FF; 
+}
+.recycle-bin[data-bin="papel"]::before { content: "📰"; }
+.recycle-bin[data-bin="vidro"] { 
+    border-color: #008000; color: #008000; 
+}
+.recycle-bin[data-bin="vidro"]::before { content: "🍾"; }
+.recycle-bin[data-bin="metal"] { 
+    border-color: #FFFF00; color: #b4b400; 
+}
+.recycle-bin[data-bin="metal"]::before { content: "🥫"; }
+.recycle-bin[data-bin="organico"] { 
+    border-color: #8B4513; color: #8B4513; 
+}
+.recycle-bin[data-bin="organico"]::before { content: "🍌"; }
+#nivel-reciclagem .recycle-bin.drag-over {
+    background-color: #f0f0f0;
+}
+#nivel-reciclagem .recycle-bin.correct-drop {
+    background-color: #d4edda;
+    border-style: solid;
+}
+#nivel-reciclagem .recycle-bin.wrong-drop {
+    background-color: #f8d7da;
+}
+#nivel-reciclagem #recycle-feedback-text {
+    margin-top: 15px;
+    font-size: 1.1em;
+    font-weight: bold;
+    min-height: 1.2em;
+}
+#nivel-reciclagem #recycle-feedback-text.correct {
+    color: #28a745;
+}
+#nivel-reciclagem #recycle-feedback-text.wrong {
+    color: #dc3545;
+}
+
+/* ============================
+   REGRAS NÍVEL 5: TARTARUGA ZEN
+   ============================ */
+
+#nivel-respiracao #zen-container {
+    background-image: url(tartaruga-zen.png);
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-size: contain; 
+    border-radius: 15px;
+    padding: 20px;
+    width: 90%;
+    max-width: 500px; 
+    text-align: center;
+    margin: 20px auto;
+}
+#nivel-respiracao #zen-animation-container {
+    display: grid;
+    place-items: center;
+    height: 300px;
+    width: 100%;
+    margin: 20px 0;
+}
+#nivel-respiracao #zen-bubble {
+    width: 100px;
+    height: 100px;
+    background-color: #89CFF0; 
+    border-radius: 50%;
+    transition: all 4s ease-in-out; 
+    transform: scale(1);
+    opacity: 0.8;
+}
+#nivel-respiracao #zen-bubble.inhale {
+    transform: scale(2.5);
+    background-color: #FFB6C1; 
+    opacity: 1;
+}
+#nivel-respiracao #zen-instruction {
+    font-size: 1.3em;
+    font-weight: bold;
+    color: #555;
+    min-height: 1.5em;
+    /* Adiciona um fundo semi-transparente para legibilidade */
+    background-color: rgba(255, 255, 255, 0.7);
+    padding: 5px;
+    border-radius: 5px;
+}
+
+/* ============================
+   REGRAS CONTROLE DE VOLUME
+   ============================ */
+
+#volume-control-widget {
+    position: absolute;
+    top: 25px;
+    right: 25px;
+    z-index: 1000; 
+    display: flex;
+    align-items: center;
+}
+#volume-icon {
+    font-size: 1.8em;
+    cursor: pointer;
+    user-select: none;
+}
+#volume-slider {
+    margin-left: 10px;
+    display: none; 
+    width: 100px;
+}
+#volume-control-widget.open #volume-slider {
+    display: block;
 }
 
 /* ========================
@@ -721,7 +904,6 @@ body {
         border-right: 30px solid transparent; 
         border-bottom: 60px solid #ffc107; 
     }
-    /* NOVAS FORMAS (Mobile) */
     #nivel-sentidos .hexagono {
         width: 60px; height: 60px;
     }
@@ -731,6 +913,11 @@ body {
     #nivel-sentidos .target-box {
         height: 80px;
         font-size: 1em;
+    }
+    /* (CSS Corrigido) Responsividade para Alvo Único */
+    #nivel-sentidos #target-zone {
+        height: 120px;
+        font-size: 1.1em;
     }
 
     /* NÍVEL 2 (EMOÇÕES) */
@@ -743,23 +930,27 @@ body {
     #interface button {
         font-size: 1em;
         padding: 10px 20px;
-    }
+   }
     #mensagem {
         font-size: 1em;
     }
 }
 /* ============================
-   REGRAS AVENTURA DOS SENTIDOS (ATUALIZAÇÃO - Alvo Único)
+   REGRAS AVENTURA DOS SENTIDOS (REVERSÃO PARA ALVO ÚNICO)
    ============================ */
 
-/* Remove o container de organização */
+/* Esconde o container de organização (da V15) */
 #nivel-sentidos #sensory-target-container {
     display: none;
 }
+/* Esconde as caixas de organização (da V15) */
+#nivel-sentidos .target-box {
+    display: none;
+}
 
-/* Restaura o alvo único */
+/* MOSTRA o container de alvo único (da V16) */
 #nivel-sentidos #target-zone {
-    display: flex; /* <-- Muda de 'none' para 'flex' */
+    display: flex; 
     height: 150px;
     border: 3px dashed #4a90e2;
     border-radius: 10px;
@@ -772,21 +963,16 @@ body {
     transition: background-color 0.2s, border-color 0.2s;
 }
 
-/* Feedback visual quando o item está sendo arrastado por CIMA do alvo */
 #nivel-sentidos #target-zone.drag-over {
     background-color: #e0eafc;
     border-color: #357abd;
 }
-
-/* Feedback visual quando a forma CORRETA é solta */
 #nivel-sentidos #target-zone.correct-drop {
-    background-color: #d4edda; /* Verde claro */
+    background-color: #d4edda;
     border-color: #28a745;
 }
-
-/* Feedback visual quando a forma ERRADA é solta */
 #nivel-sentidos #target-zone.wrong-drop {
-    background-color: #f8d7da; /* Vermelho claro */
+    background-color: #f8d7da;
     border-color: #dc3545;
 }
 
