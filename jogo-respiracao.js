@@ -117,14 +117,14 @@ function runBreatheCycle() {
     zenBubble.style.transition = 'all 4s ease-in-out'; 
     zenInstruction.textContent = `Inspire... (Ciclo ${zenCycleCount + 1} de ${Z_CYCLES_TO_WIN_PEARL})`;
     zenBubble.classList.add("inhale"); 
-    playSound(audioVoice, "sounds/voice-inspire.wav"); // Toca "Inspire"
+    playSound(audioVoice, "sounds/voice-inspire.mp3"); // Toca "Inspire"
 
     // 2. EXPIRAR (Timer de Animação - 4 segundos)
     zenAnimationTimer = setTimeout(() => {
         if (!isBreathing) return; 
         zenInstruction.textContent = `Expire... (Ciclo ${zenCycleCount + 1} de ${Z_CYCLES_TO_WIN_PEARL})`;
         zenBubble.classList.remove("inhale"); 
-        playSound(audioVoice, "sounds/voice-expire.wav"); // Toca "Expire"
+        playSound(audioVoice, "sounds/voice-expire.mp3"); // Toca "Expire"
     }, 4000); 
 
     // 3. PRÓXIMO CICLO (Timer de Lógica - 8 segundos)
@@ -146,12 +146,12 @@ function runBreatheCycle() {
                 zenInstruction.textContent = `Você coletou ${PEARLS_TO_WIN_GAME} Pérolas da Calma! ${pearlDisplay}`;
                 isBreathing = false;
                 stopSound(audioAmbient); // Para a música de fundo
-                playSound(audioSfx, "sounds/zen-victory.wav"); // Toca som de vitória
+                playSound(audioSfx, "sounds/zen-victory.mp3"); // Toca som de vitória
             } else {
                 // Ganhou uma pérola, mas não o jogo
                 let pearlDisplay = "⚪️".repeat(pearlCount); 
                 zenInstruction.textContent = `Você ganhou ${pearlCount} Pérola! ${pearlDisplay}`;
-                playSound(audioSfx, "sounds/zen-ding.wav"); // Toca som de ganhar pérola
+                playSound(audioSfx, "sounds/zen-ding.mp3"); // Toca som de ganhar pérola
                 
                 // Inicia o próximo ciclo de respiração (sem contagem)
                 zenCycleCount = 0; // Reseta o contador de ciclos

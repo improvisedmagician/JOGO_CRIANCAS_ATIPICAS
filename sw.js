@@ -1,4 +1,4 @@
-const CACHE_NAME = 'jogo-dia-a-dia-v9'; // Versão atualizada
+const CACHE_NAME = 'jogo-dia-a-dia-v11'; // Versão atualizada
 
 const urlsToCache = [
   './',
@@ -10,14 +10,15 @@ const urlsToCache = [
   './jogo-emocoes.js',
   './jogo-sentidos.js',
   './jogo-reciclagem.js',
-  './jogo-respiracao.js', 
+  './jogo-respiracao.js',
+  './jogo-memoria.js', 
   
   // Imagens base
   './fundo.png',
   './personagem.png',
   './carro.png',
   
- // Imagens das Emoções
+  // Imagens das Emoções
   './images/rosto_alegre.png',
   './images/rosto_triste.png',
   './images/rosto_raiva.png',
@@ -33,21 +34,28 @@ const urlsToCache = [
   './images/trash/jornal.png',
   './images/trash/lata-refri.png',
   './images/trash/garrafa-vidro.png',
- './images/trash/casca-banana.png',
+  './images/trash/casca-banana.png',
 
   // Sons da Respiração
-  './sounds/ambient-zen.wav',
-  './sounds/voice-inspire.wav',
-  './sounds/voice-expire.wav',
-  './sounds/zen-ding.wav',
-  './sounds/zen-victory.wav',
+  './sounds/ambient-zen.mp3',
+  './sounds/voice-inspire.mp3',
+  './sounds/voice-expire.mp3',
+  './sounds/zen-ding.mp3',
+  './sounds/zen-victory.mp3',
+
+  // (NOVOS) Sons da Memória
+  './sounds/memory-1.mp3',
+  './sounds/memory-2.mp3',
+  './sounds/memory-3.mp3',
+  './sounds/memory-4.mp3',
+  './sounds/memory-error.mp3',
 
   // Ícones do PWA
   './images/icon-192.png',
   './images/icon-512.png'
 ];
 
-// --- CORREÇÃO 1 (skipWaiting) ---
+// Instala o SW (skipWaiting)
 self.addEventListener('install', event => {
   self.skipWaiting(); 
   event.waitUntil(
@@ -56,34 +64,30 @@ self.addEventListener('install', event => {
   );
 });
 
-// --- CORREÇÃO 2 (clients.claim) ---
+// Ativa o SW (clients.claim)
 self.addEventListener('activate', event => {
   event.waitUntil(
   	caches.keys().then(keys => Promise.all(
-  		// Filtra todos os caches que NÃO sejam o cache atual (v9)
   		keys.filter(k => k !== CACHE_NAME).map(k => caches.delete(k))
-  	)).then(() => self.clients.claim()) // Assume o controle imediato
+  	)).then(() => self.clients.claim()) 
   );
 });
 
-// --- CORREÇÃO 3 (Stale-While-Revalidate) ---
+// Fetch (Stale-While-Revalidate)
 self.addEventListener('fetch', event => {
   event.respondWith(
   	caches.match(event.request).then(cacheRes => {
-  		// Busca na rede (fetch) em paralelo
   		const fetchRes = fetch(event.request).then(networkRes => {
-  			// Se a busca funcionar, atualiza o cache
   			caches.open(CACHE_NAME).then(cache => {
   				cache.put(event.request, networkRes.clone());
   			});
   			return networkRes;
   		}).catch(() => {
-  			// Se o fetch falhar (offline), não faz nada aqui, 
-  			// pois o cacheRes (se existir) já será retornado.
+  			if (cacheRes) {
+  				return cacheRes;
+  			}
   		});
   		
-  		// Retorna o cache imediatamente (rápido) se existir,
-  		// senão, espera a resposta da rede.
   		return cacheRes || fetchRes;
   	})
   );

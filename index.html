@@ -64,6 +64,15 @@
                 </div>
             </div>
             
+            <div class="menu-level-group">
+                <h3>Nível 6: Jogo da Memória 🧠</h3>
+                <div class="difficulty-buttons">
+                    <button class="menu-btn difficulty" data-target="nivel-memoria" data-difficulty="facil">Fácil</button>
+                    <button class="menu-btn difficulty" data-target="nivel-memoria" data-difficulty="medio">Médio</button>
+                    <button class="menu-btn difficulty" data-target="nivel-memoria" data-difficulty="dificil">Difícil</button>
+                </div>
+            </div>
+            
         </section>
 
                 <section id="nivel-rua" class="game-screen">
@@ -116,12 +125,10 @@
         
                 <section id="nivel-sentidos" class="game-screen">
             <button class="btn-voltar" data-target="menu-principal"> &lt; Voltar ao Menu</button>
-    
             <div id="sensory-game-container">
                 <h1 id="sensory-title">Aventura dos Sentidos</h1>
                 <p id="sensory-instruction">Encontre a forma pedida.</p>
-    
-                                <div id="draggable-shapes">
+                <div id="draggable-shapes">
                     <div id="shape-circulo" class="shape circulo" draggable="true" data-shape="circulo"></div>
                     <div id="shape-quadrado" class="shape quadrado" draggable="true" data-shape="quadrado"></div>
                     <div id="shape-triangulo" class="shape triangulo" draggable="true" data-shape="triangulo"></div>
@@ -130,63 +137,89 @@
                     <div id="shape-hexagono" class="shape hexagono" draggable="true" data-shape="hexagono"></div>
                     <div id="shape-losango" class="shape losango" draggable="true" data-shape="losango"></div>
                 </div>
-    
-                                <div id="target-zone" data-target-shape="">
-                                    </div>
-    
-                                <div id="sensory-feedback-text"></div>
+              	<div id="target-zone" data-target-shape="">
+              		              	</div>
+              	<div id="sensory-feedback-text"></div>
             </div>
-        </section>
-        
-                <section id="nivel-reciclagem" class="game-screen">
-            <button class="btn-voltar" data-target="menu-principal"> &lt; Voltar ao Menu</button>
-            <div id="recycle-game-container">
-                <h1 id="recycle-title">EcoAventura ♻️</h1>
-                <p id="recycle-instruction">Arraste o lixo para a lixeira correta!</p>
-                <div id="recycle-items-container">
-                                    </div>
-                <div id="recycle-bin-container">
-                                    </div>
-                <div id="recycle-feedback-text"></div>
-       </div>
-        </section>
+      	</section>
+      	
+      	      	<section id="nivel-reciclagem" class="game-screen">
+      		<button class="btn-voltar" data-target="menu-principal"> &lt; Voltar ao Menu</button>
+      		<div id="recycle-game-container">
+      			<h1 id="recycle-title">EcoAventura ♻️</h1>
+      			<p id="recycle-instruction">Arraste o lixo para a lixeira correta!</p>
+      			<div id="recycle-items-container">
+      				      			</div>
+      			<div id="recycle-bin-container">
+      				      			</div>
+      			<div id="recycle-feedback-text"></div>
+      		</div>
+      	</section>
 
-                <section id="nivel-respiracao" class="game-screen">
-            <button class="btn-voltar" data-target="menu-principal"> &lt; Voltar ao Menu</button>
-            <div id="zen-container">
-                <h1 id="zen-title">Respira e Relaxe 🐢</h1>
-                <div id="zen-animation-container">
-                    <div id="zen-bubble"></div>
-                </div>
-                <p id="zen-instruction">Acompanhe a bolha...</p>
-            </div>
-            
-            <audio id="audio-ambient-zen" loop src="sounds/ambient-zen.wav"></audio>
-            <audio id="audio-zen-voice" src=""></audio>
-            <audio id="audio-zen-sfx" src=""></audio>
-            
-        </section>
+      	      	<section id="nivel-respiracao" class="game-screen">
+      		<button class="btn-voltar" data-target="menu-principal"> &lt; Voltar ao Menu</button>
+      		<div id="zen-container">
+      			<h1 id="zen-title">Respira e Relaxe 🐢</h1>
+      			<div id="zen-animation-container">
+      				<div id="zen-bubble"></div>
+      			</div>
+      			<p id="zen-instruction">Acompanhe a bolha...</p>
+      		</div>
+      		
+      		<audio id="audio-ambient-zen" loop src="sounds/ambient-zen.mp3"></audio>
+      		<audio id="audio-zen-voice" src=""></audio>
+      		<audio id="audio-zen-sfx" src=""></audio>
+      		
+      	</section>
+      	
+      	      	<section id="nivel-memoria" class="game-screen">
+      		<button class="btn-voltar" data-target="menu-principal"> &lt; Voltar ao Menu</button>
+      		<div id="memory-game-container">
+      			<h1>Jogo da Memória</h1>
+      			<p id="memory-instruction">Observe a sequência...</p>
+      			
+      			      			<div class="memory-scores">
+      				<div id="memory-score">Pontuação: 0</div>
+      				<div id="memory-high-score">Recorde: 0</div>
+      			</div>
+      			      			
+      			<div id="memory-board">
+      				<div class="memory-btn" data-color="1" id="btn-verde"></div>
+      				<div class="memory-btn" data-color="2" id="btn-vermelho"></div>
+      				<div class="memory-btn" data-color="3" id="btn-amarelo"></div>
+      				<div class="memory-btn" data-color="4" id="btn-azul"></div>
+      			</div>
+      			
+      			<button id="memory-start-btn">Começar!</button>
+      		</div>
+      		
+      		<audio id="audio-memory-1" src="sounds/memory-1.mp3"></audio>
+      		<audio id="audio-memory-2" src="sounds/memory-2.mp3"></audio>
+      		<audio id="audio-memory-3" src="sounds/memory-3.mp3"></audio>
+  		<audio id="audio-memory-4" src="sounds/memory-4.mp3"></audio>
+      		<audio id="audio-memory-error" src="sounds/memory-error.mp3"></audio>
+      		
+      	</section>
 
     </div> 
     
     <script src="jogo-rua.js"></script>
   	<script src="jogo-emocoes.js"></script>
-    <script src="jogo-sentidos.js"></script> 
-    <script src="jogo-reciclagem.js"></script> 
-    <script src="jogo-respiracao.js"></script> 
+  	<script src="jogo-sentidos.js"></script> 
+  	<script src="jogo-reciclagem.js"></script> 
+  	<script src="jogo-respiracao.js"></script> 
+  	<script src="jogo-memoria.js"></script>
   	<script src="script.js"></script>
 
-  	  	<script>
-  		// Só executa se for em um servidor (http ou https)
+  	<script>
+  		// Script do PWA/Service Worker (Corrigido para CORS)
   		if ('serviceWorker' in navigator && (window.location.protocol === 'http:' || window.location.protocol === 'https:')) {
   			
-  			// 1. Adiciona o Manifest dinamicamente
   			var link = document.createElement('link');
   			link.rel = 'manifest';
   			link.href = 'manifest.json';
   			document.head.appendChild(link);
 
-  			// 2. Registra o Service Worker
   			window.addEventListener('load', () => {
   				navigator.serviceWorker.register('./sw.js') 
   					.then(registration => {
@@ -200,5 +233,5 @@
   			console.log('PWA/Service Worker não suportado ou executando localmente (file://).');
   		}
   	</script>
-  	</body>
+</body>
 </html>
